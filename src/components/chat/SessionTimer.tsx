@@ -29,26 +29,28 @@ export function SessionTimer({
 
   if (secs === null) {
     return (
-      <span className="font-mono text-xs text-muted tabular-nums">--:-- kaldı</span>
+      <span className="font-mono text-xs text-muted tabular-nums">--:--</span>
     );
   }
   const m = Math.floor(secs / 60);
   const s = String(secs % 60).padStart(2, '0');
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="w-24 h-1 bg-paper-deep rounded-full overflow-hidden">
+    <div className="flex items-center gap-3 justify-end">
+      <span className="label-caps">Kalan</span>
+      <div className="w-20 h-px bg-rule relative overflow-visible">
         <div
-          className="h-full transition-[width] duration-1000 ease-linear"
+          className="absolute top-1/2 left-0 -translate-y-1/2 h-px transition-[width] duration-1000 ease-linear"
           style={{
-            width: `${Math.min(100, ratio * 100)}%`,
+            width: `${Math.max(2, ratio * 100)}%`,
             background: lowTime ? 'var(--color-accent)' : 'var(--color-ink)',
+            height: lowTime ? '2px' : '1px',
           }}
         />
       </div>
       <span
-        className={`font-mono text-xs tabular-nums ${
-          lowTime ? 'text-accent' : 'text-muted'
+        className={`font-mono text-sm tabular-nums ${
+          lowTime ? 'text-accent' : 'text-ink'
         }`}
       >
         {m}:{s}

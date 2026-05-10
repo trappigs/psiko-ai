@@ -97,28 +97,31 @@ export function ChatWindow(props: {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-3rem)]">
-      <header className="flex items-center justify-between gap-4 pb-4 border-b border-rule">
-        <a href="/" className="btn-quiet text-xs">
-          ← Vakalar
-        </a>
-        <div className="text-center flex-1 min-w-0">
+    <div className="max-w-4xl mx-auto px-6 md:px-10 py-6 flex flex-col h-[calc(100vh-3rem)]">
+      <header className="grid grid-cols-3 items-baseline gap-4 pb-5 border-b border-rule">
+        <a href="/" className="btn-quiet">← Vakalar</a>
+        <div className="text-center">
           <p className="label-caps">Seans</p>
-          <h2 className="font-display text-lg leading-tight truncate">{props.caseTitle}</h2>
+          <h2 className="font-display-italic text-xl leading-tight truncate mt-0.5">
+            {props.caseTitle}
+          </h2>
         </div>
-        <SessionTimer startedAt={props.startedAt} onExpire={() => setExpired(true)} />
+        <div className="flex justify-end">
+          <SessionTimer startedAt={props.startedAt} onExpire={() => setExpired(true)} />
+        </div>
       </header>
 
       <MessageList messages={messages} />
 
-      <MessageInput onSend={send} disabled={streaming || expired} />
-      <EndSessionButton onEnd={endSession} disabled={streaming} />
-
-      {expired && (
-        <p className="text-center text-sm text-accent mt-3 font-display-italic">
-          Süre doldu. Lütfen seansı bitir.
-        </p>
-      )}
+      <div className="border-t border-rule pt-4">
+        <MessageInput onSend={send} disabled={streaming || expired} />
+        <EndSessionButton onEnd={endSession} disabled={streaming} />
+        {expired && (
+          <p className="text-center text-sm text-accent mt-3 font-display-italic">
+            Süre doldu. Lütfen seansı bitir.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

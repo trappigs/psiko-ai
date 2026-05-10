@@ -23,55 +23,71 @@ export default function Page() {
   }
 
   return (
-    <main className="max-w-2xl mx-auto px-4 py-10 md:py-14 space-y-10">
-      <header className="flex items-end justify-between gap-4">
-        <div>
-          <p className="label-caps mb-2">Hesap</p>
-          <h1 className="font-display text-4xl md:text-5xl">Ayarlar</h1>
-        </div>
-        <a href="/" className="btn-quiet text-xs">← Geri</a>
+    <main className="max-w-2xl mx-auto px-6 md:px-10 py-10 md:py-14">
+      <nav className="flex items-center justify-between mb-16">
+        <a href="/" className="btn-quiet">← Vakalar</a>
+        <p className="label-caps">Hesap</p>
+      </nav>
+
+      <header className="mb-16">
+        <p className="label-caps mb-3">Ayarlar</p>
+        <h1 className="font-display text-5xl md:text-6xl leading-[0.98]">
+          <em className="font-display-italic">Hesabını</em>
+          <br />
+          yönet.
+        </h1>
       </header>
 
-      <section className="surface p-6 flex items-center justify-between gap-4">
-        <div>
-          <p className="font-display text-lg">Oturum</p>
-          <p className="text-sm text-muted mt-1">Bu cihazdaki oturumunu kapat.</p>
+      <section className="py-8 border-t border-rule">
+        <div className="flex items-baseline justify-between gap-6">
+          <div>
+            <p className="font-display text-2xl leading-tight">Oturum</p>
+            <p className="text-sm text-muted mt-2">Bu cihazdaki oturumunu kapat.</p>
+          </div>
+          <button onClick={handleSignOut} className="btn-outline shrink-0">
+            Çıkış yap
+          </button>
         </div>
-        <button onClick={handleSignOut} className="btn-outline">
-          Çıkış yap
-        </button>
       </section>
 
-      <section className="surface p-6 space-y-4 border-l-4 border-l-danger">
-        <div>
-          <p className="font-display text-lg">Hesabı sil</p>
-          <p className="text-sm text-muted mt-1">
-            Tüm seansların, raporların ve verilerin kalıcı olarak silinecek. Geri alınamaz.
-          </p>
+      <section className="py-8 border-t border-rule">
+        <div className="flex items-baseline justify-between gap-6 mb-4">
+          <div>
+            <p className="font-display text-2xl leading-tight text-danger">
+              <em className="font-display-italic">Hesabı sil</em>
+            </p>
+            <p className="text-sm text-muted mt-2 max-w-md">
+              Tüm seansların, raporların ve verilerin kalıcı olarak silinecek. Geri alınamaz.
+            </p>
+          </div>
+          {!confirming && (
+            <button onClick={() => setConfirming(true)} className="btn-quiet text-danger shrink-0">
+              Hesabımı sil
+            </button>
+          )}
         </div>
-        {!confirming ? (
-          <button onClick={() => setConfirming(true)} className="btn-quiet text-danger">
-            Hesabımı sil
-          </button>
-        ) : (
-          <div className="flex gap-2">
-            <button onClick={() => setConfirming(false)} className="btn-outline">
-              Vazgeç
-            </button>
-            <button
-              onClick={handleDelete}
-              className="btn-primary"
-              style={{ background: 'var(--color-danger)' }}
-            >
-              Evet, kalıcı olarak sil
-            </button>
+        {confirming && (
+          <div className="surface-deep p-4 flex items-center justify-between gap-3 mt-2">
+            <p className="text-sm font-display-italic">Geri alınamaz. Emin misin?</p>
+            <div className="flex gap-2 shrink-0">
+              <button onClick={() => setConfirming(false)} className="btn-quiet">
+                Vazgeç
+              </button>
+              <button
+                onClick={handleDelete}
+                className="btn-primary"
+                style={{ background: 'var(--color-danger)' }}
+              >
+                Evet, kalıcı sil
+              </button>
+            </div>
           </div>
         )}
-        {error && <p className="text-sm text-danger">{error}</p>}
+        {error && <p className="text-sm text-danger mt-2">{error}</p>}
       </section>
 
-      <section className="text-sm text-center">
-        <a href="/kvkk" className="btn-quiet">KVKK Aydınlatma Metni</a>
+      <section className="py-8 border-t border-rule">
+        <a href="/kvkk" className="btn-quiet">KVKK Aydınlatma Metni →</a>
       </section>
     </main>
   );

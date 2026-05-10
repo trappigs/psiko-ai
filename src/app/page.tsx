@@ -1,6 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
-import { CaseGrid } from '@/components/case/CaseGrid';
 import { redirect } from 'next/navigation';
+
+const DIFFICULTY_LABEL: Record<string, string> = {
+  easy: 'Kolay',
+  medium: 'Orta',
+  hard: 'Zor',
+};
 
 export default async function HomePage() {
   const sb = await createClient();
@@ -24,37 +29,101 @@ export default async function HomePage() {
     .limit(1)
     .maybeSingle();
 
+  const list = (cases ?? []) as Array<{
+    id: string;
+    title: string;
+    presenting: string;
+    difficulty: 'easy' | 'medium' | 'hard';
+  }>;
+
   return (
-    <main className="max-w-6xl mx-auto px-4 py-10 md:py-14">
-      <header className="flex items-end justify-between flex-wrap gap-6 mb-12">
-        <div>
-          <p className="label-caps mb-2">Vaka kütüphanesi</p>
-          <h1 className="text-5xl md:text-6xl font-display leading-[0.95]">
-            Bugün <em className="font-display-italic">kim</em> ile çalışacaksın?
-          </h1>
-          <p className="text-ink-soft mt-3 max-w-md">
-            Bir vaka seç, AI danışanla pratik yap, oturum sonu süpervizör raporunu oku.
-          </p>
-        </div>
-        <nav className="flex items-center gap-5 text-sm">
+    <main className="max-w-6xl mx-auto px-6 md:px-10 py-8 md:py-12">
+      <nav className="flex items-center justify-between mb-20">
+        <p className="label-caps-strong">Bereketli Topraklar — Psikoloji Pratiği</p>
+        <div className="flex items-center gap-6">
           <a href="/gecmis" className="btn-quiet">Geçmiş</a>
           <a href="/ayarlar" className="btn-quiet">Ayarlar</a>
-        </nav>
+        </div>
+      </nav>
+
+      <header className="grid md:grid-cols-12 gap-8 mb-24 md:mb-32 items-end">
+        <div className="md:col-span-9">
+          <p className="label-caps mb-6">Vol. 01 · Vaka kütüphanesi</p>
+          <h1 className="font-display leading-[0.92] text-[3.5rem] md:text-[7rem] tracking-tight">
+            Bugün
+            <br />
+            <em className="font-display-italic text-accent">kim</em> ile
+            <br />
+            çalışacaksın?
+          </h1>
+        </div>
+        <div className="md:col-span-3 md:text-right">
+          <p className="font-display-italic text-2xl md:text-3xl leading-tight text-ink-soft">
+            “Bir vaka seç,
+            <br />
+            seansı yaşa,
+            <br />
+            süpervizörü dinle.”
+          </p>
+          <p className="label-caps mt-6">— Editör</p>
+        </div>
       </header>
 
+      <div className="ornament mb-16" aria-hidden></div>
+
       {openSession && (
-        <div className="surface mb-10 p-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-xs text-accent">●</span>
-            <p className="text-sm">Devam eden bir seansın var.</p>
+        <div className="surface-deep mb-16 px-6 py-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <span className="font-mono text-xs text-accent tracking-wider">●  AÇIK SEANS</span>
+            <p className="font-display-italic text-lg">
+              Bir konuşma yarıda kaldı.
+            </p>
           </div>
-          <a href={`/seans/${openSession.id}`} className="text-sm font-medium underline underline-offset-4 decoration-accent hover:text-accent">
+          <a href={`/seans/${openSession.id}`} className="btn-outline">
             Devam et →
           </a>
         </div>
       )}
 
-      <CaseGrid cases={(cases ?? []) as never} />
+      <section>
+        <header className="flex items-baseline justify-between mb-2">
+          <p className="label-caps">İçindekiler · {String(list.length).padStart(2, '0')} vaka</p>
+          <p className="label-caps">Süre · 45 dk</p>
+        </header>
+
+        <ol className="list-none">
+          {list.map((c, i) => (
+            <li key={c.id}>
+              <a
+                href={`/seans/start?case=${c.id}`}
+                className="index-row group"
+                aria-label={`${c.title} — seansa başla`}
+              >
+                <span className="index-num">{String(i + 1).padStart(2, '0')}</span>
+                <span className="min-w-0">
+                  <span className="block index-title">
+                    <em className="font-display-italic">{c.title}</em>
+                  </span>
+                  <span className="block mt-2 text-sm text-ink-soft leading-relaxed line-clamp-2 max-w-2xl">
+                    {c.presenting}
+                  </span>
+                </span>
+                <span className="index-meta whitespace-nowrap" data-difficulty={c.difficulty}>
+                  {DIFFICULTY_LABEL[c.difficulty]}
+                </span>
+                <span className="font-mono text-base text-muted group-hover:text-accent transition-colors">
+                  →
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <footer className="mt-32 pt-10 border-t border-rule flex items-center justify-between text-xs text-muted">
+        <p className="label-caps">Pratik · Süpervizyon · Türkçe</p>
+        <p className="font-mono">{new Date().getFullYear()}</p>
+      </footer>
     </main>
   );
 }

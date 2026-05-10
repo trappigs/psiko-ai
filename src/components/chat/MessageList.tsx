@@ -8,9 +8,7 @@ export type Msg = {
   role: 'student' | 'client';
   content: string;
   created_at: string;
-  /** Server-assigned message id once persisted; until then undefined for in-flight assistant messages. */
   persistedId?: string;
-  /** Existing feedback for the persisted message (only relevant for client messages). */
   feedback?: FeedbackState;
 };
 
@@ -19,51 +17,50 @@ export function MessageList({ messages }: { messages: Msg[] }) {
   useEffect(() => {
     ref.current?.scrollTo({ top: ref.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
+
   return (
-    <div ref={ref} className="flex-1 overflow-y-auto py-4 space-y-5 pr-1">
+    <div ref={ref} className="flex-1 overflow-y-auto py-10 pr-2">
       {messages.length === 0 && (
-        <div className="text-center py-16">
-          <p className="font-display-italic text-2xl text-muted">
-            Seans başladı. Selamla, hoşgeldin de.
+        <div className="text-center py-24">
+          <p className="font-display-italic text-3xl text-muted leading-tight">
+            Seans başladı.
+            <br />
+            Bir cümle ile başla.
           </p>
         </div>
       )}
-      {messages.map((m) => (
-        <div
-          key={m.id}
-          className={`flex flex-col slide-in ${
-            m.role === 'student' ? 'items-end' : 'items-start'
-          }`}
-        >
-          <span className="label-caps mb-1 px-1">
-            {m.role === 'student' ? 'Sen — terapist' : 'Danışan'}
-          </span>
-          <div
-            className={`max-w-[85%] ${
-              m.role === 'student' ? 'bubble-student' : 'bubble-client'
-            }`}
-          >
-            {m.role === 'client' ? (
-              m.content ? (
-                <RichText text={m.content} />
+
+      <div className="space-y-10 max-w-2xl mx-auto">
+        {messages.map((m) => (
+          <article key={m.id} className="slide-in">
+            <span
+              className={`speaker-label ${m.role === 'student' ? 'speaker-label--student' : ''}`}
+            >
+              {m.role === 'student' ? '— Sen, terapist' : '— Danışan'}
+            </span>
+            <div className={m.role === 'student' ? 'bubble-student' : 'bubble-client'}>
+              {m.role === 'client' ? (
+                m.content ? (
+                  <RichText text={m.content} />
+                ) : (
+                  <span className="typing-dots" aria-label="yazıyor">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </span>
+                )
               ) : (
-                <span className="typing-dots inline-flex items-center" aria-label="yazıyor">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </span>
-              )
-            ) : (
-              <span className="whitespace-pre-wrap">{m.content}</span>
-            )}
-          </div>
-          {m.role === 'client' && m.persistedId && (
-            <div className="max-w-[85%] mt-1.5">
-              <MessageFeedback messageId={m.persistedId} initial={m.feedback ?? null} />
+                <span className="whitespace-pre-wrap">{m.content}</span>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+            {m.role === 'client' && m.persistedId && (
+              <div className="mt-3">
+                <MessageFeedback messageId={m.persistedId} initial={m.feedback ?? null} />
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
