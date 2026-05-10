@@ -1,11 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-
-const DIFFICULTY_LABEL: Record<string, string> = {
-  easy: 'Kolay',
-  medium: 'Orta',
-  hard: 'Zor',
-};
+import { CaseIndex } from '@/components/case/CaseIndex';
 
 export default async function HomePage() {
   const sb = await createClient();
@@ -28,6 +23,13 @@ export default async function HomePage() {
     .order('started_at', { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  const { data: doneRows } = await sb
+    .from('sessions')
+    .select('case_id')
+    .eq('user_id', user.id)
+    .eq('status', 'completed');
+  const doneIds = Array.from(new Set((doneRows ?? []).map((r) => r.case_id))).filter(Boolean) as string[];
 
   const list = (cases ?? []) as Array<{
     id: string;
@@ -86,40 +88,7 @@ export default async function HomePage() {
         </div>
       )}
 
-      <section>
-        <header className="flex items-baseline justify-between mb-2">
-          <p className="label-caps">İçindekiler · {String(list.length).padStart(2, '0')} vaka</p>
-          <p className="label-caps">Süre · 45 dk</p>
-        </header>
-
-        <ol className="list-none">
-          {list.map((c, i) => (
-            <li key={c.id}>
-              <a
-                href={`/vaka/${c.id}`}
-                className="index-row group"
-                aria-label={`${c.title} — vaka dosyasını aç`}
-              >
-                <span className="index-num">{String(i + 1).padStart(2, '0')}</span>
-                <span className="min-w-0">
-                  <span className="block index-title">
-                    <em className="font-display-italic">{c.title}</em>
-                  </span>
-                  <span className="block mt-2 text-sm text-ink-soft leading-relaxed line-clamp-2 max-w-2xl">
-                    {c.presenting}
-                  </span>
-                </span>
-                <span className="index-meta whitespace-nowrap" data-difficulty={c.difficulty}>
-                  {DIFFICULTY_LABEL[c.difficulty]}
-                </span>
-                <span className="font-mono text-base text-muted group-hover:text-accent transition-colors">
-                  →
-                </span>
-              </a>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <CaseIndex cases={list} doneIds={doneIds} />
 
       <footer className="mt-32 pt-10 border-t border-rule flex items-center justify-between text-xs text-muted">
         <p className="label-caps">Pratik · Süpervizyon · Türkçe</p>

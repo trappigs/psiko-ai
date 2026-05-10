@@ -30,6 +30,22 @@ export function ChatWindow(props: {
   const [streaming, setStreaming] = useState(false);
   const [expired, setExpired] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const errorLabel = (code: string) => {
+    switch (code) {
+      case 'session_expired':
+        return 'Süre doldu — yeni mesaj gönderilemiyor.';
+      case 'rate_limited':
+        return 'Günlük kotanı doldurdun. Yarın yeniden gel.';
+      case 'session_not_active':
+        return 'Bu seans zaten kapanmış.';
+      case 'unauthorized':
+        return 'Oturum süresi dolmuş, yeniden giriş yap.';
+      default:
+        return 'Bir şey ters gitti, tekrar dene.';
+    }
+  };
 
   const mountedRef = useRef(true);
   const abortRef = useRef<AbortController | null>(null);
@@ -53,6 +69,7 @@ export function ChatWindow(props: {
       content: '',
       created_at: new Date().toISOString(),
     };
+    setError(null);
     setMessages((m) => [...m, userMsg, assistantMsg]);
     setStreaming(true);
 
@@ -79,7 +96,7 @@ export function ChatWindow(props: {
       if (!mountedRef.current) return;
       if (err.error === 'session_expired') setExpired(true);
       setMessages((m) => m.slice(0, -1));
-      alert(err.error ?? 'Bir hata oluştu, tekrar dene.');
+      setError(errorLabel(err.error ?? ''));
       return;
     }
 
@@ -123,7 +140,7 @@ export function ChatWindow(props: {
       body: JSON.stringify({ session_id: props.sessionId }),
     });
     if (res.ok) router.push(`/rapor/${props.sessionId}`);
-    else alert('Seans bitirilemedi.');
+    else setError('Seans bitirilemedi, bir saniye sonra tekrar dene.');
   }
 
   return (
@@ -163,9 +180,22 @@ export function ChatWindow(props: {
 
       <div className="sticky bottom-0 border-t border-rule bg-gradient-to-t from-paper via-paper to-paper/0 pb-4">
         <div className="max-w-3xl mx-auto px-4 md:px-6 pt-3">
+          {error && (
+            <div className="mb-3 surface-deep border-l-2 border-l-danger px-4 py-3 flex items-start gap-3 slide-in">
+              <span className="text-danger mt-0.5">⚠</span>
+              <p className="text-sm text-ink-soft flex-1">{error}</p>
+              <button
+                onClick={() => setError(null)}
+                className="btn-quiet text-xs"
+                aria-label="Kapat"
+              >
+                ✕
+              </button>
+            </div>
+          )}
           <MessageInput onSend={send} disabled={streaming || expired} />
           <EndSessionButton onEnd={endSession} disabled={streaming} />
-          {expired && (
+          {expired && !error && (
             <p className="text-center text-sm text-accent mt-3 font-display-italic">
               Süre doldu. Lütfen seansı bitir.
             </p>

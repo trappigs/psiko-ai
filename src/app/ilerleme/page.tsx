@@ -63,7 +63,7 @@ export default async function Page() {
     .map((r, i) => ({
       date: r.date.toISOString(),
       value: openQuestionRatio(r.skills),
-      label: `#${i + 1}`,
+      label: r.date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
     }));
 
   const reflectionPoints = reports.map((r, i) => ({

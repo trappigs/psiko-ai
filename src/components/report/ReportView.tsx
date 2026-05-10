@@ -25,6 +25,7 @@ type Msg = {
 
 export function ReportView(props: {
   sessionId: string;
+  caseId: string;
   caseTitle: string;
   report: Report;
   messages: Msg[];
@@ -198,9 +199,12 @@ export function ReportView(props: {
 
       <p className="text-xs text-muted italic mb-10">{REPORT_FOOTER}</p>
 
-      <div className="flex items-center gap-4">
-        <a href="/" className="btn-primary">
-          Yeni seans →
+      <div className="flex items-center gap-4 flex-wrap">
+        <a href={`/seans/start?case=${props.caseId}`} className="btn-primary">
+          Bu vakayı tekrar dene →
+        </a>
+        <a href="/" className="btn-outline">
+          Başka vaka
         </a>
         <a href="/gecmis" className="btn-quiet">
           Tüm raporlar

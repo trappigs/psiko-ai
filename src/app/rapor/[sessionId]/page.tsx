@@ -9,7 +9,7 @@ type SessionWithCase = {
   id: string;
   status: 'in_progress' | 'completed' | 'abandoned';
   user_id: string;
-  case: { title: string } | null;
+  case: { id: string; title: string } | null;
 };
 
 type ReportRow = {
@@ -72,7 +72,7 @@ export default async function Page({
 
   const { data } = await sb
     .from('sessions')
-    .select('id, status, user_id, case:cases(title)')
+    .select('id, status, user_id, case:cases(id, title)')
     .eq('id', sessionId)
     .single();
   const session = data as unknown as SessionWithCase | null;
@@ -98,6 +98,7 @@ export default async function Page({
   return (
     <ReportView
       sessionId={sessionId}
+      caseId={session.case?.id ?? ''}
       caseTitle={session.case?.title ?? ''}
       report={
         report
