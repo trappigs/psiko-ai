@@ -7,11 +7,15 @@ import { EndSessionButton } from './EndSessionButton';
 import { useRouter } from 'next/navigation';
 
 const MSG_ID_PATTERN = /\n\n__MSG_ID__:([0-9a-f-]{36})__$/;
+// While streaming the marker arrives chunk by chunk; hide any in-progress prefix.
+const MSG_ID_PREFIX_PATTERN = /\n\n__(M(S(G(_(I(D(_(_(:[0-9a-f-]*)?)?)?)?)?)?)?)?)?$/;
 
 function splitMsgIdMarker(text: string): { visible: string; msgId: string | undefined } {
   const m = text.match(MSG_ID_PATTERN);
-  if (!m) return { visible: text, msgId: undefined };
-  return { visible: text.slice(0, -m[0].length), msgId: m[1] };
+  if (m) return { visible: text.slice(0, -m[0].length), msgId: m[1] };
+  const partial = text.match(MSG_ID_PREFIX_PATTERN);
+  if (partial) return { visible: text.slice(0, -partial[0].length), msgId: undefined };
+  return { visible: text, msgId: undefined };
 }
 
 export function ChatWindow(props: {

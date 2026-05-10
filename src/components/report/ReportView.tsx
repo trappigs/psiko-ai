@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { REPORT_FOOTER } from '@/lib/disclaimer';
 import { MessageFeedback, type FeedbackState } from '@/components/chat/MessageFeedback';
+import { RichText } from '@/components/chat/RichText';
 
 type Report = {
   summary: string;
@@ -126,7 +127,8 @@ export function ReportView(props: {
           {props.messages.map((m) => (
             <div key={m.id}>
               <p className={m.role === 'student' ? 'pl-4' : ''}>
-                <strong>{m.role === 'student' ? 'S' : 'D'}:</strong> {m.content}
+                <strong>{m.role === 'student' ? 'S' : 'D'}:</strong>{' '}
+                {m.role === 'client' ? <RichText text={m.content} /> : m.content}
               </p>
               {m.role === 'client' && (
                 <MessageFeedback messageId={m.id} initial={m.feedback ?? null} />

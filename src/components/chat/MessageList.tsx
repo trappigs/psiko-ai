@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import { MessageFeedback, type FeedbackState } from './MessageFeedback';
+import { RichText } from './RichText';
 
 export type Msg = {
   id: string;
@@ -30,7 +31,11 @@ export function MessageList({ messages }: { messages: Msg[] }) {
             <span className="block text-xs opacity-70 mb-1">
               {m.role === 'student' ? 'S' : 'D'}
             </span>
-            <span className="whitespace-pre-wrap">{m.content || '...'}</span>
+            {m.role === 'client' ? (
+              <RichText text={m.content || '...'} />
+            ) : (
+              <span className="whitespace-pre-wrap">{m.content || '...'}</span>
+            )}
           </div>
           {m.role === 'client' && m.persistedId && (
             <div className="max-w-[80%]">
