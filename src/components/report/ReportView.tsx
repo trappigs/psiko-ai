@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { REPORT_FOOTER } from '@/lib/disclaimer';
 import { MessageFeedback, type FeedbackState } from '@/components/chat/MessageFeedback';
 import { RichText } from '@/components/chat/RichText';
+import { MicroskillsBreakdown } from './MicroskillsBreakdown';
+import type { Microskills } from '@/lib/openai/supervisor-prompt';
 
 type Report = {
   summary: string;
@@ -10,6 +12,7 @@ type Report = {
   improvements: string[];
   missed_signals: string[];
   next_steps: string;
+  microskills: Microskills;
 } | null;
 
 type Msg = {
@@ -149,8 +152,14 @@ export function ReportView(props: {
 
       <hr className="rule-soft mb-16" />
 
+      <section className="mb-16">
+        <MicroskillsBreakdown skills={report.microskills} />
+      </section>
+
+      <hr className="rule-soft mb-16" />
+
       <section className="mb-20">
-        <p className="label-caps mb-4">IV · Sonraki adımlar</p>
+        <p className="label-caps mb-4">Sonraki adımlar</p>
         <p className="text-2xl md:text-3xl leading-snug font-display-italic">
           {report.next_steps}
         </p>

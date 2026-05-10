@@ -171,6 +171,7 @@ export type Database = {
           generated_at: string
           id: string
           improvements: Json
+          microskills: Json
           missed_signals: Json
           model_version: string
           next_steps: string
@@ -182,6 +183,7 @@ export type Database = {
           generated_at?: string
           id?: string
           improvements?: Json
+          microskills?: Json
           missed_signals?: Json
           model_version: string
           next_steps: string
@@ -193,6 +195,7 @@ export type Database = {
           generated_at?: string
           id?: string
           improvements?: Json
+          microskills?: Json
           missed_signals?: Json
           model_version?: string
           next_steps?: string

@@ -41,6 +41,7 @@ export default async function HomePage() {
       <nav className="flex items-center justify-between mb-20">
         <p className="label-caps-strong">Bereketli Topraklar — Psikoloji Pratiği</p>
         <div className="flex items-center gap-6">
+          <a href="/ilerleme" className="btn-quiet">İlerleme</a>
           <a href="/gecmis" className="btn-quiet">Geçmiş</a>
           <a href="/ayarlar" className="btn-quiet">Ayarlar</a>
         </div>

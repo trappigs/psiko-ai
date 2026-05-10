@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation';
 import { ReportView } from '@/components/report/ReportView';
 import { loadFeedbackByMessageId } from '@/lib/message-feedback';
 import type { Json } from '@/lib/types';
+import type { Microskills, MicroskillEntry } from '@/lib/openai/supervisor-prompt';
 
 type SessionWithCase = {
   id: string;
@@ -17,6 +18,7 @@ type ReportRow = {
   improvements: Json;
   missed_signals: Json;
   next_steps: string;
+  microskills: Json;
 };
 
 type MessageRow = {
@@ -28,6 +30,32 @@ type MessageRow = {
 
 function toStringList(j: Json): string[] {
   return Array.isArray(j) ? j.map((v) => String(v)) : [];
+}
+
+function emptySkill(): MicroskillEntry {
+  return { count: 0, examples: [] };
+}
+
+function parseSkill(j: unknown): MicroskillEntry {
+  if (!j || typeof j !== 'object') return emptySkill();
+  const r = j as Record<string, unknown>;
+  return {
+    count: typeof r.count === 'number' ? Math.max(0, Math.floor(r.count)) : 0,
+    examples: Array.isArray(r.examples) ? r.examples.map(String).slice(0, 6) : [],
+  };
+}
+
+function parseMicroskills(j: Json): Microskills {
+  const o =
+    j && typeof j === 'object' && !Array.isArray(j) ? (j as Record<string, unknown>) : {};
+  return {
+    open_question: parseSkill(o.open_question),
+    closed_question: parseSkill(o.closed_question),
+    reflection: parseSkill(o.reflection),
+    empathy: parseSkill(o.empathy),
+    summary: parseSkill(o.summary),
+    advice_or_interpretation: parseSkill(o.advice_or_interpretation),
+  };
 }
 
 export default async function Page({
@@ -52,7 +80,7 @@ export default async function Page({
 
   const { data: rawReport } = await sb
     .from('reports')
-    .select('summary, strengths, improvements, missed_signals, next_steps')
+    .select('summary, strengths, improvements, missed_signals, next_steps, microskills')
     .eq('session_id', sessionId)
     .maybeSingle();
   const report = rawReport as ReportRow | null;
@@ -79,6 +107,7 @@ export default async function Page({
               improvements: toStringList(report.improvements),
               missed_signals: toStringList(report.missed_signals),
               next_steps: report.next_steps,
+              microskills: parseMicroskills(report.microskills),
             }
           : null
       }

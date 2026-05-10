@@ -103,6 +103,7 @@ export async function POST(
     improvements: parsed.improvements,
     missed_signals: parsed.missed_signals,
     next_steps: parsed.next_steps,
+    microskills: parsed.microskills,
     model_version: modelVersion,
   });
   if (error) return NextResponse.json({ error: 'insert_failed' }, { status: 500 });
