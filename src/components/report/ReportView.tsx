@@ -52,96 +52,129 @@ export function ReportView(props: {
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto p-6 text-center">
-        <p>Süpervizör seansını inceliyor…</p>
-      </div>
+      <main className="max-w-2xl mx-auto px-4 py-24 text-center">
+        <p className="font-display-italic text-3xl text-muted">
+          Süpervizör seansını inceliyor…
+        </p>
+        <div className="typing-dots inline-flex mt-4" aria-label="yükleniyor">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </main>
     );
   }
   if (error || !report) {
     return (
-      <div className="max-w-3xl mx-auto p-6 text-center space-y-3">
-        <p className="text-red-700">{error ?? 'Rapor yok.'}</p>
-        <button onClick={generate} className="bg-black text-white px-4 py-2 rounded">
+      <main className="max-w-2xl mx-auto px-4 py-24 text-center space-y-4">
+        <p className="font-display-italic text-2xl text-danger">{error ?? 'Rapor henüz yok.'}</p>
+        <button onClick={generate} className="btn-primary">
           Tekrar dene
         </button>
-      </div>
+      </main>
     );
   }
 
   return (
-    <main className="max-w-3xl mx-auto p-6 space-y-6">
+    <main className="max-w-2xl mx-auto px-4 py-10 md:py-14 space-y-10">
       <header>
-        <a href="/" className="text-sm underline">
-          ← Vakalara dön
+        <a href="/" className="btn-quiet text-xs">
+          ← Vakalar
         </a>
-        <h1 className="text-2xl font-bold mt-2">{props.caseTitle}</h1>
-        <p className="text-sm text-gray-500">Seans Raporu</p>
+        <p className="label-caps mt-6 mb-2">Süpervizör raporu</p>
+        <h1 className="font-display text-4xl md:text-5xl leading-tight">
+          {props.caseTitle}
+        </h1>
       </header>
 
+      <hr className="rule" />
+
       <section>
-        <h2 className="font-semibold mb-2">Özet</h2>
-        <p>{report.summary}</p>
+        <p className="label-caps mb-3">Özet</p>
+        <p className="text-lg leading-relaxed text-ink-soft">{report.summary}</p>
       </section>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <hr className="rule" />
+
+      <div className="grid md:grid-cols-2 gap-10">
         <section>
-          <h3 className="font-semibold mb-2">✅ Güçlü Yanların</h3>
-          <ul className="list-disc pl-5 space-y-1">
+          <p className="label-caps mb-3 text-success">Güçlü yanlar</p>
+          <ul className="space-y-2.5">
             {report.strengths.map((s, i) => (
-              <li key={i}>{s}</li>
+              <li key={i} className="flex gap-3 text-sm leading-relaxed">
+                <span className="font-mono text-success text-xs mt-1">+</span>
+                <span>{s}</span>
+              </li>
             ))}
           </ul>
         </section>
         <section>
-          <h3 className="font-semibold mb-2">⚠️ Geliştirilebilir Alanlar</h3>
-          <ul className="list-disc pl-5 space-y-1">
+          <p className="label-caps mb-3 text-warn">Geliştirilebilir</p>
+          <ul className="space-y-2.5">
             {report.improvements.map((s, i) => (
-              <li key={i}>{s}</li>
+              <li key={i} className="flex gap-3 text-sm leading-relaxed">
+                <span className="font-mono text-warn text-xs mt-1">→</span>
+                <span>{s}</span>
+              </li>
             ))}
           </ul>
         </section>
       </div>
 
       <section>
-        <h3 className="font-semibold mb-2">🔍 Kaçırılan İşaretler</h3>
-        <ul className="list-disc pl-5 space-y-1">
+        <p className="label-caps mb-3 text-accent">Kaçırılan işaretler</p>
+        <ul className="space-y-2.5">
           {report.missed_signals.map((s, i) => (
-            <li key={i}>{s}</li>
+            <li key={i} className="flex gap-3 text-sm leading-relaxed">
+              <span className="font-mono text-accent text-xs mt-1">✱</span>
+              <span>{s}</span>
+            </li>
           ))}
         </ul>
       </section>
 
+      <hr className="rule" />
+
       <section>
-        <h3 className="font-semibold mb-2">📋 Sonraki Adımlar</h3>
-        <p>{report.next_steps}</p>
+        <p className="label-caps mb-3">Sonraki adımlar</p>
+        <p className="font-display-italic text-xl leading-relaxed text-ink">
+          {report.next_steps}
+        </p>
       </section>
+
+      <hr className="rule" />
 
       <details
         open={showTranscript}
         onToggle={(e) => setShowTranscript((e.target as HTMLDetailsElement).open)}
+        className="surface-deep p-5"
       >
-        <summary className="cursor-pointer font-semibold">
-          Transkripti gör — danışan yanıtlarına geri bildirim verebilirsin
+        <summary className="cursor-pointer label-caps">
+          Transkript — danışan yanıtlarına geri bildirim ver
         </summary>
-        <div className="mt-3 space-y-3">
+        <div className="mt-5 space-y-4">
           {props.messages.map((m) => (
-            <div key={m.id}>
-              <p className={m.role === 'student' ? 'pl-4' : ''}>
-                <strong>{m.role === 'student' ? 'S' : 'D'}:</strong>{' '}
+            <div key={m.id} className="text-sm">
+              <p className={m.role === 'student' ? 'pl-0' : ''}>
+                <span className="label-caps mr-2 inline-block min-w-[60px]">
+                  {m.role === 'student' ? 'Sen' : 'Danışan'}
+                </span>
                 {m.role === 'client' ? <RichText text={m.content} /> : m.content}
               </p>
               {m.role === 'client' && (
-                <MessageFeedback messageId={m.id} initial={m.feedback ?? null} />
+                <div className="mt-1.5 ml-[60px]">
+                  <MessageFeedback messageId={m.id} initial={m.feedback ?? null} />
+                </div>
               )}
             </div>
           ))}
         </div>
       </details>
 
-      <p className="text-xs text-gray-500 italic">{REPORT_FOOTER}</p>
+      <p className="text-xs text-muted italic">{REPORT_FOOTER}</p>
 
-      <a href="/" className="inline-block bg-black text-white px-4 py-2 rounded">
-        Yeni seans başlat
+      <a href="/" className="btn-primary">
+        Yeni seans başlat →
       </a>
     </main>
   );

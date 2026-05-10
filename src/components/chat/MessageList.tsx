@@ -20,25 +20,45 @@ export function MessageList({ messages }: { messages: Msg[] }) {
     ref.current?.scrollTo({ top: ref.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
   return (
-    <div ref={ref} className="flex-1 overflow-y-auto space-y-3 py-2">
+    <div ref={ref} className="flex-1 overflow-y-auto py-4 space-y-5 pr-1">
+      {messages.length === 0 && (
+        <div className="text-center py-16">
+          <p className="font-display-italic text-2xl text-muted">
+            Seans başladı. Selamla, hoşgeldin de.
+          </p>
+        </div>
+      )}
       {messages.map((m) => (
-        <div key={m.id} className={`flex flex-col ${m.role === 'student' ? 'items-end' : 'items-start'}`}>
+        <div
+          key={m.id}
+          className={`flex flex-col slide-in ${
+            m.role === 'student' ? 'items-end' : 'items-start'
+          }`}
+        >
+          <span className="label-caps mb-1 px-1">
+            {m.role === 'student' ? 'Sen — terapist' : 'Danışan'}
+          </span>
           <div
-            className={`max-w-[80%] p-3 rounded-lg ${
-              m.role === 'student' ? 'bg-black text-white' : 'bg-gray-100'
+            className={`max-w-[85%] ${
+              m.role === 'student' ? 'bubble-student' : 'bubble-client'
             }`}
           >
-            <span className="block text-xs opacity-70 mb-1">
-              {m.role === 'student' ? 'S' : 'D'}
-            </span>
             {m.role === 'client' ? (
-              <RichText text={m.content || '...'} />
+              m.content ? (
+                <RichText text={m.content} />
+              ) : (
+                <span className="typing-dots inline-flex items-center" aria-label="yazıyor">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
+              )
             ) : (
-              <span className="whitespace-pre-wrap">{m.content || '...'}</span>
+              <span className="whitespace-pre-wrap">{m.content}</span>
             )}
           </div>
           {m.role === 'client' && m.persistedId && (
-            <div className="max-w-[80%]">
+            <div className="max-w-[85%] mt-1.5">
               <MessageFeedback messageId={m.persistedId} initial={m.feedback ?? null} />
             </div>
           )}

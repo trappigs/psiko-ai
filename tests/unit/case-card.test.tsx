@@ -7,6 +7,7 @@ describe('CaseCard', () => {
     render(
       <CaseCard
         id="c1"
+        index={3}
         title="Sınav kaygısı"
         presenting="Son 2 aydır uyku problemi..."
         difficulty="medium"

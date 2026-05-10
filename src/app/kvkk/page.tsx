@@ -4,6 +4,14 @@ import path from 'path';
 export default async function Page() {
   const md = await fs.readFile(path.join(process.cwd(), 'docs/KVKK.md'), 'utf8');
   return (
-    <article className="prose max-w-2xl mx-auto p-6 whitespace-pre-wrap text-sm">{md}</article>
+    <main className="max-w-2xl mx-auto px-4 py-10 md:py-14">
+      <header className="mb-8">
+        <a href="/" className="btn-quiet text-xs">← Geri</a>
+        <p className="label-caps mt-6 mb-2">Yasal</p>
+      </header>
+      <article className="prose prose-stone max-w-none whitespace-pre-wrap text-sm leading-relaxed">
+        {md}
+      </article>
+    </main>
   );
 }

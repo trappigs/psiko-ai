@@ -40,66 +40,97 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-16 space-y-4 p-6 border rounded">
-      <h1 className="text-2xl font-bold">{mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol'}</h1>
-      <input
-        type="email"
-        required
-        placeholder="E-posta"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full border p-2 rounded"
-      />
-      <input
-        type="password"
-        required
-        minLength={8}
-        placeholder="Şifre (en az 8 karakter)"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full border p-2 rounded"
-      />
-      {mode === 'signup' && (
-        <label className="flex items-start gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={kvkkAccepted}
-            onChange={(e) => setKvkkAccepted(e.target.checked)}
-          />
-          <span>
-            <a href="/kvkk" target="_blank" className="underline">
-              KVKK Aydınlatma Metni
-            </a>
-            &apos;ni okudum ve verilerimin OpenAI altyapısında işlenmesine onay veriyorum.
-          </span>
-        </label>
-      )}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-black text-white py-2 rounded disabled:opacity-50"
-      >
-        {loading ? '...' : mode === 'login' ? 'Giriş' : 'Kayıt'}
-      </button>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {info && <p className="text-sm text-green-700">{info}</p>}
-      <p className="text-sm text-center">
-        {mode === 'login' ? (
-          <>
-            Hesabın yok mu?{' '}
-            <a href="/signup" className="underline">
-              Kayıt ol
-            </a>
-          </>
-        ) : (
-          <>
-            Zaten hesabın var mı?{' '}
-            <a href="/login" className="underline">
-              Giriş yap
-            </a>
-          </>
-        )}
-      </p>
-    </form>
+    <main className="min-h-[calc(100vh-2rem)] flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <header className="mb-10 text-center">
+          <p className="label-caps mb-3">Bereketli Topraklar — Psikoloji</p>
+          <h1 className="text-4xl font-display-italic mb-2">
+            {mode === 'login' ? 'Tekrar hoş geldin.' : 'Pratiğe başla.'}
+          </h1>
+          <p className="text-sm text-muted">
+            {mode === 'login'
+              ? 'AI danışanla seansa devam et.'
+              : 'AI danışanla terapi pratiği yap, süpervizör raporu al.'}
+          </p>
+        </header>
+
+        <form onSubmit={handleSubmit} className="surface p-7 space-y-5">
+          <div className="space-y-1.5">
+            <label className="label-caps block">E-posta</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full"
+              placeholder="ornek@kurum.edu.tr"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="label-caps block">Şifre</label>
+            <input
+              type="password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full"
+              placeholder="en az 8 karakter"
+            />
+          </div>
+
+          {mode === 'signup' && (
+            <label className="flex items-start gap-2.5 text-xs text-ink-soft leading-relaxed">
+              <input
+                type="checkbox"
+                checked={kvkkAccepted}
+                onChange={(e) => setKvkkAccepted(e.target.checked)}
+                className="mt-0.5 accent-ink"
+              />
+              <span>
+                <a href="/kvkk" target="_blank" className="underline underline-offset-2 hover:text-ink">
+                  KVKK Aydınlatma Metni
+                </a>
+                &apos;ni okudum; verilerimin OpenAI altyapısında işlenmesine onay veriyorum.
+              </span>
+            </label>
+          )}
+
+          <button type="submit" disabled={loading} className="btn-primary w-full">
+            {loading ? '...' : mode === 'login' ? 'Giriş yap' : 'Hesap aç'}
+          </button>
+
+          {error && (
+            <p className="text-sm text-danger border-l-2 border-danger pl-3 py-1 bg-accent-soft/40 rounded-r">
+              {error}
+            </p>
+          )}
+          {info && (
+            <p className="text-sm text-success border-l-2 border-success pl-3 py-1 bg-paper-deep rounded-r">
+              {info}
+            </p>
+          )}
+        </form>
+
+        <p className="mt-6 text-sm text-center text-muted">
+          {mode === 'login' ? (
+            <>
+              Hesabın yok mu?{' '}
+              <a href="/signup" className="text-ink underline underline-offset-2 hover:text-accent">
+                Kayıt ol
+              </a>
+            </>
+          ) : (
+            <>
+              Zaten hesabın var mı?{' '}
+              <a href="/login" className="text-ink underline underline-offset-2 hover:text-accent">
+                Giriş yap
+              </a>
+            </>
+          )}
+        </p>
+      </div>
+    </main>
   );
 }

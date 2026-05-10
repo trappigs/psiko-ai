@@ -13,7 +13,7 @@ export default async function HomePage() {
     .from('cases')
     .select('id, title, presenting, difficulty')
     .eq('is_active', true)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: true });
 
   const { data: openSession } = await sb
     .from('sessions')
@@ -25,24 +25,31 @@ export default async function HomePage() {
     .maybeSingle();
 
   return (
-    <main className="max-w-5xl mx-auto p-6">
-      <header className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Vakalar</h1>
-        <nav className="flex gap-4 text-sm">
-          <a href="/gecmis" className="underline">
-            Geçmiş
-          </a>
-          <a href="/ayarlar" className="underline">
-            Ayarlar
-          </a>
+    <main className="max-w-6xl mx-auto px-4 py-10 md:py-14">
+      <header className="flex items-end justify-between flex-wrap gap-6 mb-12">
+        <div>
+          <p className="label-caps mb-2">Vaka kütüphanesi</p>
+          <h1 className="text-5xl md:text-6xl font-display leading-[0.95]">
+            Bugün <em className="font-display-italic">kim</em> ile çalışacaksın?
+          </h1>
+          <p className="text-ink-soft mt-3 max-w-md">
+            Bir vaka seç, AI danışanla pratik yap, oturum sonu süpervizör raporunu oku.
+          </p>
+        </div>
+        <nav className="flex items-center gap-5 text-sm">
+          <a href="/gecmis" className="btn-quiet">Geçmiş</a>
+          <a href="/ayarlar" className="btn-quiet">Ayarlar</a>
         </nav>
       </header>
 
       {openSession && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded flex items-center justify-between">
-          <span>Devam eden bir seansın var.</span>
-          <a href={`/seans/${openSession.id}`} className="underline font-medium">
-            Devam et
+        <div className="surface mb-10 p-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs text-accent">●</span>
+            <p className="text-sm">Devam eden bir seansın var.</p>
+          </div>
+          <a href={`/seans/${openSession.id}`} className="text-sm font-medium underline underline-offset-4 decoration-accent hover:text-accent">
+            Devam et →
           </a>
         </div>
       )}

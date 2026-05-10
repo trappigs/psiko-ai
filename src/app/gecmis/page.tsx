@@ -16,6 +16,12 @@ const STATUS_LABEL: Record<SessionRow['status'], string> = {
   abandoned: 'Yarıda bırakıldı',
 };
 
+const STATUS_COLOR: Record<SessionRow['status'], string> = {
+  in_progress: 'text-accent',
+  completed: 'text-success',
+  abandoned: 'text-muted',
+};
+
 export default async function Page() {
   const sb = await createClient();
   const {
@@ -31,48 +37,50 @@ export default async function Page() {
   const sessions = (data ?? []) as unknown as SessionRow[];
 
   return (
-    <main className="max-w-3xl mx-auto p-6">
-      <header className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Geçmiş Seanslar</h1>
-        <a href="/" className="underline text-sm">
-          ← Vakalara dön
-        </a>
+    <main className="max-w-3xl mx-auto px-4 py-10 md:py-14">
+      <header className="flex items-end justify-between mb-10 gap-4">
+        <div>
+          <p className="label-caps mb-2">Arşiv</p>
+          <h1 className="font-display text-4xl md:text-5xl">Geçmiş seanslar</h1>
+        </div>
+        <a href="/" className="btn-quiet text-xs">← Vakalar</a>
       </header>
+
       {sessions.length === 0 ? (
-        <p className="text-gray-500">Henüz bir seans yapmadın.</p>
+        <div className="surface-deep p-10 text-center">
+          <p className="font-display-italic text-2xl text-muted">Henüz bir seans yapmadın.</p>
+          <a href="/" className="btn-primary mt-6">İlk seansını başlat →</a>
+        </div>
       ) : (
-        <table className="w-full text-sm">
-          <thead className="text-left border-b">
-            <tr>
-              <th className="p-2">Tarih</th>
-              <th className="p-2">Vaka</th>
-              <th className="p-2">Mesaj</th>
-              <th className="p-2">Durum</th>
-              <th className="p-2"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {sessions.map((s) => (
-              <tr key={s.id} className="border-b">
-                <td className="p-2">{new Date(s.started_at).toLocaleString('tr-TR')}</td>
-                <td className="p-2">{s.case?.title ?? '-'}</td>
-                <td className="p-2">{s.message_count}</td>
-                <td className="p-2">{STATUS_LABEL[s.status]}</td>
-                <td className="p-2">
-                  {s.status === 'completed' ? (
-                    <a href={`/rapor/${s.id}`} className="underline">
-                      Raporu gör
-                    </a>
-                  ) : s.status === 'in_progress' ? (
-                    <a href={`/seans/${s.id}`} className="underline">
-                      Devam et
-                    </a>
-                  ) : null}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="surface divide-y divide-rule">
+          {sessions.map((s) => (
+            <div key={s.id} className="p-5 flex items-center justify-between gap-4 hover:bg-paper-deep transition-colors">
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-lg leading-tight truncate">{s.case?.title ?? '—'}</p>
+                <p className="text-xs text-muted mt-1">
+                  {new Date(s.started_at).toLocaleString('tr-TR', {
+                    day: 'numeric',
+                    month: 'long',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                  {' · '}
+                  {s.message_count} mesaj
+                </p>
+              </div>
+              <span className={`text-xs font-medium ${STATUS_COLOR[s.status]} shrink-0`}>
+                {STATUS_LABEL[s.status]}
+              </span>
+              <div className="shrink-0">
+                {s.status === 'completed' ? (
+                  <a href={`/rapor/${s.id}`} className="btn-quiet text-xs">Raporu gör →</a>
+                ) : s.status === 'in_progress' ? (
+                  <a href={`/seans/${s.id}`} className="btn-quiet text-xs">Devam et →</a>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </main>
   );

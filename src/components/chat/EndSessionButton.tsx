@@ -11,20 +11,15 @@ export function EndSessionButton({
   const [confirming, setConfirming] = useState(false);
   if (confirming) {
     return (
-      <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded flex items-center justify-between">
-        <span className="text-sm">Seansı bitirmek istediğine emin misin? Rapor üretilecek.</span>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setConfirming(false)}
-            className="text-sm px-3 py-1 border rounded"
-          >
+      <div className="mt-3 surface-deep p-4 flex items-center justify-between gap-3">
+        <p className="text-sm text-ink-soft">
+          Seansı bitirip rapor üretmek istediğine emin misin?
+        </p>
+        <div className="flex gap-2 shrink-0">
+          <button onClick={() => setConfirming(false)} className="btn-outline">
             Vazgeç
           </button>
-          <button
-            onClick={onEnd}
-            disabled={disabled}
-            className="text-sm px-3 py-1 bg-black text-white rounded"
-          >
+          <button onClick={onEnd} disabled={disabled} className="btn-primary">
             Evet, bitir
           </button>
         </div>
@@ -32,12 +27,10 @@ export function EndSessionButton({
     );
   }
   return (
-    <button
-      onClick={() => setConfirming(true)}
-      disabled={disabled}
-      className="mt-3 text-sm underline self-center disabled:opacity-50"
-    >
-      Seansı bitir ve rapor al
-    </button>
+    <div className="mt-3 text-center">
+      <button onClick={() => setConfirming(true)} disabled={disabled} className="btn-quiet">
+        Seansı bitir & rapor al
+      </button>
+    </div>
   );
 }

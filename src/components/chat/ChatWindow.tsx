@@ -7,7 +7,6 @@ import { EndSessionButton } from './EndSessionButton';
 import { useRouter } from 'next/navigation';
 
 const MSG_ID_PATTERN = /\n\n__MSG_ID__:([0-9a-f-]{36})__$/;
-// While streaming the marker arrives chunk by chunk; hide any in-progress prefix.
 const MSG_ID_PREFIX_PATTERN = /\n\n__(M(S(G(_(I(D(_(_(:[0-9a-f-]*)?)?)?)?)?)?)?)?)?$/;
 
 function splitMsgIdMarker(text: string): { visible: string; msgId: string | undefined } {
@@ -98,19 +97,25 @@ export function ChatWindow(props: {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-4 flex flex-col h-[calc(100vh-3rem)]">
-      <header className="flex items-center justify-between border-b pb-3 mb-3">
-        <a href="/" className="text-sm underline">
-          ← Vakalara dön
+    <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-3rem)]">
+      <header className="flex items-center justify-between gap-4 pb-4 border-b border-rule">
+        <a href="/" className="btn-quiet text-xs">
+          ← Vakalar
         </a>
-        <h2 className="font-semibold">{props.caseTitle}</h2>
+        <div className="text-center flex-1 min-w-0">
+          <p className="label-caps">Seans</p>
+          <h2 className="font-display text-lg leading-tight truncate">{props.caseTitle}</h2>
+        </div>
         <SessionTimer startedAt={props.startedAt} onExpire={() => setExpired(true)} />
       </header>
+
       <MessageList messages={messages} />
+
       <MessageInput onSend={send} disabled={streaming || expired} />
       <EndSessionButton onEnd={endSession} disabled={streaming} />
+
       {expired && (
-        <p className="text-center text-sm text-amber-700 mt-2">
+        <p className="text-center text-sm text-accent mt-3 font-display-italic">
           Süre doldu. Lütfen seansı bitir.
         </p>
       )}
