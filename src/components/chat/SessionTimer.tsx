@@ -9,8 +9,9 @@ export function SessionTimer({
   startedAt: string;
   onExpire: () => void;
 }) {
-  const [secs, setSecs] = useState(() => remainingSeconds(new Date(startedAt)));
+  const [secs, setSecs] = useState<number | null>(null);
   useEffect(() => {
+    setSecs(remainingSeconds(new Date(startedAt)));
     const t = setInterval(() => {
       const r = remainingSeconds(new Date(startedAt));
       setSecs(r);
@@ -21,6 +22,9 @@ export function SessionTimer({
     }, 1000);
     return () => clearInterval(t);
   }, [startedAt, onExpire]);
+  if (secs === null) {
+    return <span className="text-sm tabular-nums">⏱ --:--</span>;
+  }
   const m = Math.floor(secs / 60);
   const s = String(secs % 60).padStart(2, '0');
   return (
