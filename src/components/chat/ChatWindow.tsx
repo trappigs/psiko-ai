@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MessageList, type Msg } from './MessageList';
 import { MessageInput } from './MessageInput';
 import { SessionTimer } from './SessionTimer';
@@ -28,6 +28,15 @@ export function ChatWindow(props: {
   const [streaming, setStreaming] = useState(false);
   const [expired, setExpired] = useState(false);
 
+  const mountedRef = useRef(true);
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      abortRef.current?.abort();
+    };
+  }, []);
+
   async function send(content: string) {
     const userMsg: Msg = {
       id: 'tmp-' + Date.now(),
@@ -44,15 +53,27 @@ export function ChatWindow(props: {
     setMessages((m) => [...m, userMsg, assistantMsg]);
     setStreaming(true);
 
-    const res = await fetch('/api/seans/message', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ session_id: props.sessionId, content }),
-    });
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    let res: Response;
+    try {
+      res = await fetch('/api/seans/message', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ session_id: props.sessionId, content }),
+        signal: controller.signal,
+      });
+    } catch {
+      return; // aborted (likely unmounted) or network error
+    }
+
+    if (!mountedRef.current) return;
 
     if (!res.ok || !res.body) {
       setStreaming(false);
       const err = await res.json().catch(() => ({}));
+      if (!mountedRef.current) return;
       if (err.error === 'session_expired') setExpired(true);
       setMessages((m) => m.slice(0, -1));
       alert(err.error ?? 'Bir hata oluştu, tekrar dene.');
@@ -62,17 +83,23 @@ export function ChatWindow(props: {
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let acc = '';
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      acc += decoder.decode(value, { stream: true });
-      const { visible } = splitMsgIdMarker(acc);
-      setMessages((m) => {
-        const copy = [...m];
-        copy[copy.length - 1] = { ...copy[copy.length - 1], content: visible };
-        return copy;
-      });
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        if (!mountedRef.current) return;
+        acc += decoder.decode(value, { stream: true });
+        const { visible } = splitMsgIdMarker(acc);
+        setMessages((m) => {
+          const copy = [...m];
+          copy[copy.length - 1] = { ...copy[copy.length - 1], content: visible };
+          return copy;
+        });
+      }
+    } catch {
+      return; // stream interrupted
     }
+    if (!mountedRef.current) return;
     const { visible, msgId } = splitMsgIdMarker(acc);
     setMessages((m) => {
       const copy = [...m];

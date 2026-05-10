@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { REPORT_FOOTER } from '@/lib/disclaimer';
 import { MessageFeedback, type FeedbackState } from '@/components/chat/MessageFeedback';
 import { RichText } from '@/components/chat/RichText';
@@ -31,6 +31,13 @@ export function ReportView(props: {
   const [error, setError] = useState<string | null>(null);
   const [showTranscript, setShowTranscript] = useState(false);
 
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
   useEffect(() => {
     if (!report && !loading) generate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,12 +47,14 @@ export function ReportView(props: {
     setLoading(true);
     setError(null);
     const res = await fetch(`/api/rapor/${props.sessionId}`, { method: 'POST' });
+    if (!mountedRef.current) return;
     if (!res.ok) {
       setError('Rapor üretilemedi.');
       setLoading(false);
       return;
     }
     const r = await fetch(`/api/rapor/${props.sessionId}`).then((r) => r.json());
+    if (!mountedRef.current) return;
     setReport(r.report);
     setLoading(false);
   }
