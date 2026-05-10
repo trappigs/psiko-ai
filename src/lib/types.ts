@@ -18,39 +18,48 @@ export type Database = {
         Row: {
           background: string
           created_at: string
+          defense_style: string | null
           diagnosis_hint: string | null
           difficulty: string
           goals_hidden: string
           id: string
+          insight_level: string | null
           is_active: boolean
           personality: string
           presenting: string
+          register: string | null
           speech_style: string
           title: string
         }
         Insert: {
           background: string
           created_at?: string
+          defense_style?: string | null
           diagnosis_hint?: string | null
           difficulty: string
           goals_hidden: string
           id?: string
+          insight_level?: string | null
           is_active?: boolean
           personality: string
           presenting: string
+          register?: string | null
           speech_style: string
           title: string
         }
         Update: {
           background?: string
           created_at?: string
+          defense_style?: string | null
           diagnosis_hint?: string | null
           difficulty?: string
           goals_hidden?: string
           id?: string
+          insight_level?: string | null
           is_active?: boolean
           personality?: string
           presenting?: string
+          register?: string | null
           speech_style?: string
           title?: string
         }

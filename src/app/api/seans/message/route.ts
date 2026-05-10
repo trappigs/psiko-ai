@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   const { data: sessionData } = await svc
     .from('sessions')
     .select(
-      'id, user_id, status, started_at, case:cases(presenting, background, personality, speech_style, goals_hidden)'
+      'id, user_id, status, started_at, case:cases(presenting, background, personality, speech_style, goals_hidden, insight_level, defense_style, register)'
     )
     .eq('id', sessionId)
     .single();
