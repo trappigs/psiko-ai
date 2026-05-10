@@ -74,7 +74,7 @@ export function buildSupervisorPrompt(
   studentFormulation?: StudentFormulation | null
 ): string {
   const lines = transcript
-    .map((t) => `${t.role === 'student' ? 'S' : 'D'}: ${t.content}`)
+    .map((t, i) => `[${i + 1}] ${t.role === 'student' ? 'S' : 'D'}: ${t.content}`)
     .join('\n');
 
   const hasFormulation =
@@ -141,10 +141,29 @@ MİKROBECERİ TANIMLARI (sayım için bunlara dikkat et):
 
 Her örnek için transkriptten **gerçek alıntı** kullan, kelime kelime aynı olsun (12 kelimeden uzunsa kısaltabilirsin "…" ile). Tek bir öğrenci cümlesi birden fazla kategoriye girebilir; uygun olduğu yere koy.
 
+═══ SPESİFİKLİK ZORUNLULUĞU ═══
+
+Transkriptin önünde her satırın **mesaj numarası** var ([1], [2], …). Geri bildirimlerinde bu numaralara ve mesajdaki **gerçek alıntılara** dayan. Genel/bulanık geri bildirim verme.
+
+ZAYIF ÖRNEKLER (yapma):
+✗ "Daha açık-uçlu soru sorabilirdin."
+✗ "Aile dinamiklerine yeterince inilmedi."
+✗ "Empati gösterimi geliştirilebilir."
+
+GÜÇLÜ ÖRNEKLER (yap):
+✓ "[12] danışan 'annem hep ısrar ederdi' dediğinde bu kapıyı doğrudan açmak yerine [13]'te konuyu eşine çevirdin. Burada 'ısrar ederken seninle ne hissederdin?' gibi bir soru o anı derinleştirebilirdi."
+✓ "[8]'de 'şey... bilmem ki' duraksamasının ardından sessizliği [9]'da hemen başka bir soruyla doldurdun. Bir nefes daha bırakmak çok şey getirebilirdi."
+✓ "[16] empati ifadesi ('bunu paylaşman kolay olmadı') tam yerinde — danışanın o noktadaki utancını yumuşattığı görülüyor."
+
+Her **strengths**, **improvements**, **missed_signals** maddesi mümkün olduğunca:
+1. Bir köşeli parantez içi mesaj numarasıyla başlamalı veya geçirmeli: [N]
+2. Danışanın söylediği gerçek alıntıyı parantez içinde içermeli (kısaltmalı, "…" ile)
+3. Eğer öğrencinin alternatif söyleyebileceği bir cümle/soru varsa, **örnekle ver**.
+
 KILAVUZ:
-- Spesifik ol, transkriptten örnek ver.
 - Türk Psikolojik Danışma Derneği etik ilkelerine uyumlu kal.
-- Patolojize etme, yapıcı eleştir.`;
+- Patolojize etme, yapıcı eleştir.
+- Genelleme yapma; **bu seansa özel** geri bildirim ver.`;
 }
 
 function emptySkill(): MicroskillEntry {

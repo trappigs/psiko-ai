@@ -15,8 +15,8 @@ describe('buildSupervisorPrompt', () => {
       ]
     );
     expect(p).toContain('Sınav kaygısı');
-    expect(p).toContain('S: Nasılsın?');
-    expect(p).toContain('D: Şey, kötü.');
+    expect(p).toContain('[1] S: Nasılsın?');
+    expect(p).toContain('[2] D: Şey, kötü.');
     expect(p).toMatch(/JSON/);
   });
 });
