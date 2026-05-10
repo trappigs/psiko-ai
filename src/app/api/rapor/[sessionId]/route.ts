@@ -84,21 +84,34 @@ export async function POST(
 
   let parsed: ParsedReport | null = null;
   let modelVersion = MODEL;
+  let lastError: string | null = null;
   for (let attempt = 0; attempt < 2 && !parsed; attempt++) {
     if (isMockMode()) {
       parsed = mockSupervisorReport();
       modelVersion = 'mock';
       break;
     }
-    const openai = getOpenAI();
-    const r = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [{ role: 'system', content: prompt }],
-      response_format: { type: 'json_object' },
-    });
-    parsed = parseSupervisorReply(r.choices[0]?.message?.content ?? '');
+    try {
+      const openai = getOpenAI();
+      const r = await openai.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
+      });
+      parsed = parseSupervisorReply(r.choices[0]?.message?.content ?? '');
+      if (!parsed) lastError = 'parse_failed';
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      lastError = msg.slice(0, 200);
+      console.error(`[supervisor attempt ${attempt + 1}]`, msg);
+    }
   }
-  if (!parsed) return NextResponse.json({ error: 'parse_failed' }, { status: 502 });
+  if (!parsed) {
+    return NextResponse.json(
+      { error: 'llm_failed', detail: lastError },
+      { status: 502 }
+    );
+  }
 
   const { error } = await svc.from('reports').insert({
     session_id: sessionId,

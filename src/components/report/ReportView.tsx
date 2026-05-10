@@ -62,17 +62,28 @@ export function ReportView(props: {
   async function generate() {
     setLoading(true);
     setError(null);
-    const res = await fetch(`/api/rapor/${props.sessionId}`, { method: 'POST' });
-    if (!mountedRef.current) return;
-    if (!res.ok) {
-      setError('Rapor üretilemedi.');
+    try {
+      const res = await fetch(`/api/rapor/${props.sessionId}`, { method: 'POST' });
+      if (!mountedRef.current) return;
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        const detail = body.detail ? ` (${body.detail})` : '';
+        setError(`Rapor üretilemedi${detail}.`);
+        setLoading(false);
+        return;
+      }
+      const r = await fetch(`/api/rapor/${props.sessionId}`)
+        .then((r) => r.json())
+        .catch(() => ({ report: null }));
+      if (!mountedRef.current) return;
+      setReport(r.report);
       setLoading(false);
-      return;
+    } catch (e) {
+      if (!mountedRef.current) return;
+      const msg = e instanceof Error ? e.message : 'Bilinmeyen hata';
+      setError(`Bağlantı hatası: ${msg}`);
+      setLoading(false);
     }
-    const r = await fetch(`/api/rapor/${props.sessionId}`).then((r) => r.json());
-    if (!mountedRef.current) return;
-    setReport(r.report);
-    setLoading(false);
   }
 
   if (loading) {
