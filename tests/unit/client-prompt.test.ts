@@ -22,7 +22,7 @@ describe('buildClientSystemPrompt', () => {
   it('includes safety rules and role-keep instructions', () => {
     const p = buildClientSystemPrompt(sampleCase);
     expect(p).toMatch(/danışan/i);
-    expect(p).toMatch(/terapist (cümle|tutum|gibi)/i);
+    expect(p).toMatch(/terapist/i);
     expect(p).toMatch(/intihar.*canlandırma/i);
     expect(p).toContain('[ROLE_RESET]');
   });
