@@ -5,6 +5,7 @@ import { MessageFeedback, type FeedbackState } from '@/components/chat/MessageFe
 import { RichText } from '@/components/chat/RichText';
 import { MicroskillsBreakdown } from './MicroskillsBreakdown';
 import type { Microskills } from '@/lib/openai/supervisor-prompt';
+import type { Formulation } from '@/lib/formulation';
 
 type Report = {
   summary: string;
@@ -23,10 +24,20 @@ type Msg = {
   feedback?: FeedbackState;
 };
 
+function FormulationField({ label, text }: { label: string; text: string }) {
+  return (
+    <div>
+      <p className="label-caps mb-1.5">{label}</p>
+      <p className="font-display-italic leading-relaxed text-ink">{text}</p>
+    </div>
+  );
+}
+
 export function ReportView(props: {
   sessionId: string;
   caseId: string;
   caseTitle: string;
+  formulation: Formulation | null;
   report: Report;
   messages: Msg[];
 }) {
@@ -108,8 +119,37 @@ export function ReportView(props: {
 
       <hr className="rule mb-16" />
 
+      {props.formulation && (
+        <section className="mb-16 surface-deep px-6 py-6">
+          <p className="label-caps mb-4">Senin formülasyonun</p>
+          <div className="space-y-5">
+            {props.formulation.presenting && (
+              <FormulationField label="Sunulan sorun" text={props.formulation.presenting} />
+            )}
+            {props.formulation.hypothesis && (
+              <FormulationField label="Hipotez" text={props.formulation.hypothesis} />
+            )}
+            {props.formulation.patterns && (
+              <FormulationField label="Örüntüler" text={props.formulation.patterns} />
+            )}
+            {props.formulation.next_session && (
+              <FormulationField
+                label="Sonraki seans planı"
+                text={props.formulation.next_session}
+              />
+            )}
+          </div>
+          <p className="text-xs text-muted italic mt-6">
+            Aşağıdaki süpervizör değerlendirmesini okurken kendi formülasyonunla karşılaştır:
+            nerede buluştun, nerede ayrıldın?
+          </p>
+        </section>
+      )}
+
       <section className="mb-16">
-        <p className="label-caps mb-4">Özet</p>
+        <p className="label-caps mb-4">
+          {props.formulation ? 'Süpervizör özeti' : 'Özet'}
+        </p>
         <p className="text-xl md:text-2xl leading-relaxed font-display-italic text-ink">
           {report.summary}
         </p>
@@ -198,6 +238,18 @@ export function ReportView(props: {
       </details>
 
       <p className="text-xs text-muted italic mb-10">{REPORT_FOOTER}</p>
+
+      {!props.formulation && (
+        <div className="surface-deep px-5 py-4 mb-10 text-sm leading-relaxed">
+          Bu seans için kendi formülasyonunu yazmadın.{' '}
+          <a
+            href={`/seans/${props.sessionId}/formulasyon`}
+            className="underline underline-offset-2 hover:text-accent"
+          >
+            Şimdi yazabilirsin →
+          </a>
+        </div>
+      )}
 
       <div className="flex items-center gap-4 flex-wrap">
         <a href={`/seans/start?case=${props.caseId}`} className="btn-primary">

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
 import { ReportView } from '@/components/report/ReportView';
 import { loadFeedbackByMessageId } from '@/lib/message-feedback';
+import { parseFormulation } from '@/lib/formulation';
 import type { Json } from '@/lib/types';
 import type { Microskills, MicroskillEntry } from '@/lib/openai/supervisor-prompt';
 
@@ -9,6 +10,7 @@ type SessionWithCase = {
   id: string;
   status: 'in_progress' | 'completed' | 'abandoned';
   user_id: string;
+  formulation: unknown;
   case: { id: string; title: string } | null;
 };
 
@@ -72,11 +74,12 @@ export default async function Page({
 
   const { data } = await sb
     .from('sessions')
-    .select('id, status, user_id, case:cases(id, title)')
+    .select('id, status, user_id, formulation, case:cases(id, title)')
     .eq('id', sessionId)
     .single();
   const session = data as unknown as SessionWithCase | null;
   if (!session || session.user_id !== user.id) notFound();
+  const formulation = parseFormulation(session.formulation);
 
   const { data: rawReport } = await sb
     .from('reports')
@@ -100,6 +103,7 @@ export default async function Page({
       sessionId={sessionId}
       caseId={session.case?.id ?? ''}
       caseTitle={session.case?.title ?? ''}
+      formulation={formulation}
       report={
         report
           ? {

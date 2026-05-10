@@ -217,6 +217,7 @@ export type Database = {
         Row: {
           case_id: string
           ended_at: string | null
+          formulation: Json | null
           id: string
           message_count: number
           started_at: string
@@ -226,6 +227,7 @@ export type Database = {
         Insert: {
           case_id: string
           ended_at?: string | null
+          formulation?: Json | null
           id?: string
           message_count?: number
           started_at?: string
@@ -235,6 +237,7 @@ export type Database = {
         Update: {
           case_id?: string
           ended_at?: string | null
+          formulation?: Json | null
           id?: string
           message_count?: number
           started_at?: string
