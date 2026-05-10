@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { CaseIndex } from '@/components/case/CaseIndex';
+import { WelcomeModal } from '@/components/onboarding/WelcomeModal';
+import { StarterHint } from '@/components/onboarding/StarterHint';
 
 export default async function HomePage() {
   const sb = await createClient();
@@ -29,7 +31,9 @@ export default async function HomePage() {
     .select('case_id')
     .eq('user_id', user.id)
     .eq('status', 'completed');
-  const doneIds = Array.from(new Set((doneRows ?? []).map((r) => r.case_id))).filter(Boolean) as string[];
+  const doneIds = Array.from(new Set((doneRows ?? []).map((r) => r.case_id))).filter(
+    Boolean
+  ) as string[];
 
   const list = (cases ?? []) as Array<{
     id: string;
@@ -37,6 +41,9 @@ export default async function HomePage() {
     presenting: string;
     difficulty: 'easy' | 'medium' | 'hard';
   }>;
+
+  const isFirstTime = doneIds.length === 0 && !openSession;
+  const starter = isFirstTime ? list.find((c) => c.difficulty === 'easy') ?? list[0] : null;
 
   return (
     <main className="max-w-6xl mx-auto px-6 md:px-10 py-8 md:py-12">
@@ -78,9 +85,7 @@ export default async function HomePage() {
         <div className="surface-deep mb-16 px-6 py-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <span className="font-mono text-xs text-accent tracking-wider">●  AÇIK SEANS</span>
-            <p className="font-display-italic text-lg">
-              Bir konuşma yarıda kaldı.
-            </p>
+            <p className="font-display-italic text-lg">Bir konuşma yarıda kaldı.</p>
           </div>
           <a href={`/seans/${openSession.id}`} className="btn-outline">
             Devam et →
@@ -88,12 +93,16 @@ export default async function HomePage() {
         </div>
       )}
 
+      {starter && <StarterHint starter={starter} />}
+
       <CaseIndex cases={list} doneIds={doneIds} />
 
       <footer className="mt-32 pt-10 border-t border-rule flex items-center justify-between text-xs text-muted">
         <p className="label-caps">Pratik · Süpervizyon · Türkçe</p>
         <p className="font-mono">{new Date().getFullYear()}</p>
       </footer>
+
+      <WelcomeModal shouldShow={isFirstTime} />
     </main>
   );
 }
