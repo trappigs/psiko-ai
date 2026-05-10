@@ -6,6 +6,14 @@ import { SessionTimer } from './SessionTimer';
 import { EndSessionButton } from './EndSessionButton';
 import { useRouter } from 'next/navigation';
 
+const MSG_ID_PATTERN = /\n\n__MSG_ID__:([0-9a-f-]{36})__$/;
+
+function splitMsgIdMarker(text: string): { visible: string; msgId: string | undefined } {
+  const m = text.match(MSG_ID_PATTERN);
+  if (!m) return { visible: text, msgId: undefined };
+  return { visible: text.slice(0, -m[0].length), msgId: m[1] };
+}
+
 export function ChatWindow(props: {
   sessionId: string;
   caseTitle: string;
@@ -55,12 +63,23 @@ export function ChatWindow(props: {
       const { value, done } = await reader.read();
       if (done) break;
       acc += decoder.decode(value, { stream: true });
+      const { visible } = splitMsgIdMarker(acc);
       setMessages((m) => {
         const copy = [...m];
-        copy[copy.length - 1] = { ...copy[copy.length - 1], content: acc };
+        copy[copy.length - 1] = { ...copy[copy.length - 1], content: visible };
         return copy;
       });
     }
+    const { visible, msgId } = splitMsgIdMarker(acc);
+    setMessages((m) => {
+      const copy = [...m];
+      copy[copy.length - 1] = {
+        ...copy[copy.length - 1],
+        content: visible,
+        persistedId: msgId,
+      };
+      return copy;
+    });
     setStreaming(false);
   }
 

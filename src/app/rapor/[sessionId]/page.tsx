@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
 import { ReportView } from '@/components/report/ReportView';
+import { loadFeedbackByMessageId } from '@/lib/message-feedback';
 import type { Json } from '@/lib/types';
 
 type SessionWithCase = {
@@ -16,6 +17,13 @@ type ReportRow = {
   improvements: Json;
   missed_signals: Json;
   next_steps: string;
+};
+
+type MessageRow = {
+  id: string;
+  role: 'student' | 'client';
+  content: string;
+  created_at: string;
 };
 
 function toStringList(j: Json): string[] {
@@ -48,11 +56,16 @@ export default async function Page({
     .eq('session_id', sessionId)
     .maybeSingle();
   const report = rawReport as ReportRow | null;
-  const { data: messages } = await sb
+  const { data: rawMessages } = await sb
     .from('messages')
-    .select('role, content, created_at')
+    .select('id, role, content, created_at')
     .eq('session_id', sessionId)
     .order('created_at', { ascending: true });
+  const messages = (rawMessages ?? []) as MessageRow[];
+  const feedbackByMsgId = await loadFeedbackByMessageId(
+    sb,
+    messages.filter((m) => m.role === 'client').map((m) => m.id)
+  );
 
   return (
     <ReportView
@@ -69,7 +82,13 @@ export default async function Page({
             }
           : null
       }
-      messages={(messages ?? []) as never}
+      messages={messages.map((m) => ({
+        id: m.id,
+        role: m.role,
+        content: m.content,
+        created_at: m.created_at,
+        feedback: m.role === 'client' ? feedbackByMsgId[m.id] ?? null : null,
+      }))}
     />
   );
 }

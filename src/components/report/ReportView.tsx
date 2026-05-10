@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { REPORT_FOOTER } from '@/lib/disclaimer';
+import { MessageFeedback, type FeedbackState } from '@/components/chat/MessageFeedback';
 
 type Report = {
   summary: string;
@@ -10,7 +11,13 @@ type Report = {
   next_steps: string;
 } | null;
 
-type Msg = { role: 'student' | 'client'; content: string; created_at: string };
+type Msg = {
+  id: string;
+  role: 'student' | 'client';
+  content: string;
+  created_at: string;
+  feedback?: FeedbackState;
+};
 
 export function ReportView(props: {
   sessionId: string;
@@ -112,12 +119,19 @@ export function ReportView(props: {
         open={showTranscript}
         onToggle={(e) => setShowTranscript((e.target as HTMLDetailsElement).open)}
       >
-        <summary className="cursor-pointer font-semibold">Transkripti gör</summary>
-        <div className="mt-3 space-y-2">
-          {props.messages.map((m, i) => (
-            <p key={i}>
-              <strong>{m.role === 'student' ? 'S' : 'D'}:</strong> {m.content}
-            </p>
+        <summary className="cursor-pointer font-semibold">
+          Transkripti gör — danışan yanıtlarına geri bildirim verebilirsin
+        </summary>
+        <div className="mt-3 space-y-3">
+          {props.messages.map((m) => (
+            <div key={m.id}>
+              <p className={m.role === 'student' ? 'pl-4' : ''}>
+                <strong>{m.role === 'student' ? 'S' : 'D'}:</strong> {m.content}
+              </p>
+              {m.role === 'client' && (
+                <MessageFeedback messageId={m.id} initial={m.feedback ?? null} />
+              )}
+            </div>
           ))}
         </div>
       </details>

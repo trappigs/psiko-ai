@@ -112,12 +112,16 @@ export async function POST(request: Request) {
         }
 
         const tokens = Math.ceil(fullText.length / 4) + Math.ceil(content.length / 4);
-        await svc.from('messages').insert({
-          session_id: sessionId,
-          role: 'client',
-          content: fullText,
-          token_count: tokens,
-        });
+        const { data: inserted } = await svc
+          .from('messages')
+          .insert({
+            session_id: sessionId,
+            role: 'client',
+            content: fullText,
+            token_count: tokens,
+          })
+          .select('id')
+          .single();
         await svc.from('usage_daily').upsert(
           {
             user_id: user.id,
@@ -127,6 +131,9 @@ export async function POST(request: Request) {
           },
           { onConflict: 'user_id,day' }
         );
+        if (inserted?.id) {
+          controller.enqueue(encoder.encode(`\n\n__MSG_ID__:${inserted.id}__`));
+        }
       } catch (e) {
         controller.error(e);
         return;
