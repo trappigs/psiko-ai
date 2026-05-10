@@ -97,30 +97,36 @@ export function ChatWindow(props: {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 md:px-10 py-6 flex flex-col h-[calc(100vh-3rem)]">
-      <header className="grid grid-cols-3 items-baseline gap-4 pb-5 border-b border-rule">
-        <a href="/" className="btn-quiet">← Vakalar</a>
-        <div className="text-center">
-          <p className="label-caps">Seans</p>
-          <h2 className="font-display-italic text-xl leading-tight truncate mt-0.5">
-            {props.caseTitle}
-          </h2>
-        </div>
-        <div className="flex justify-end">
-          <SessionTimer startedAt={props.startedAt} onExpire={() => setExpired(true)} />
+    <div className="h-[calc(100vh-2rem)] flex flex-col">
+      <header className="border-b border-rule bg-paper/95 backdrop-blur">
+        <div className="max-w-3xl mx-auto px-4 md:px-6 py-3 grid grid-cols-3 items-center gap-4">
+          <a href="/" className="btn-quiet text-xs justify-self-start">
+            ← Vakalar
+          </a>
+          <div className="text-center min-w-0">
+            <p className="label-caps">Seans</p>
+            <h2 className="font-display-italic text-base leading-tight truncate">
+              {props.caseTitle}
+            </h2>
+          </div>
+          <div className="justify-self-end">
+            <SessionTimer startedAt={props.startedAt} onExpire={() => setExpired(true)} />
+          </div>
         </div>
       </header>
 
       <MessageList messages={messages} />
 
-      <div className="border-t border-rule pt-4">
-        <MessageInput onSend={send} disabled={streaming || expired} />
-        <EndSessionButton onEnd={endSession} disabled={streaming} />
-        {expired && (
-          <p className="text-center text-sm text-accent mt-3 font-display-italic">
-            Süre doldu. Lütfen seansı bitir.
-          </p>
-        )}
+      <div className="sticky bottom-0 border-t border-rule bg-gradient-to-t from-paper via-paper to-paper/0 pb-4">
+        <div className="max-w-3xl mx-auto px-4 md:px-6 pt-3">
+          <MessageInput onSend={send} disabled={streaming || expired} />
+          <EndSessionButton onEnd={endSession} disabled={streaming} />
+          {expired && (
+            <p className="text-center text-sm text-accent mt-3 font-display-italic">
+              Süre doldu. Lütfen seansı bitir.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
