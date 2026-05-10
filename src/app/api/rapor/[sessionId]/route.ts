@@ -8,12 +8,14 @@ import {
 } from '@/lib/openai/supervisor-prompt';
 import { getOpenAI, isMockMode, MODEL } from '@/lib/openai/client';
 import { mockSupervisorReport } from '@/lib/openai/mock';
+import { parseFormulation } from '@/lib/formulation';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
 type SessionWithCase = {
   user_id: string;
+  formulation: unknown;
   case: CaseSummary | null;
 };
 
@@ -56,7 +58,7 @@ export async function POST(
 
   const { data: sessionData } = await svc
     .from('sessions')
-    .select('user_id, case:cases(title, presenting, diagnosis_hint)')
+    .select('user_id, formulation, case:cases(title, presenting, diagnosis_hint)')
     .eq('id', sessionId)
     .single();
   const session = sessionData as unknown as SessionWithCase | null;
@@ -73,9 +75,11 @@ export async function POST(
     .eq('session_id', sessionId)
     .order('created_at', { ascending: true });
 
+  const studentFormulation = parseFormulation(session.formulation);
   const prompt = buildSupervisorPrompt(
     session.case,
-    ((msgs ?? []) as { role: 'student' | 'client'; content: string }[]) ?? []
+    ((msgs ?? []) as { role: 'student' | 'client'; content: string }[]) ?? [],
+    studentFormulation
   );
 
   let parsed: ParsedReport | null = null;
@@ -104,6 +108,7 @@ export async function POST(
     missed_signals: parsed.missed_signals,
     next_steps: parsed.next_steps,
     microskills: parsed.microskills,
+    formulation_comparison: parsed.formulation_comparison,
     model_version: modelVersion,
   });
   if (error) return NextResponse.json({ error: 'insert_failed' }, { status: 500 });

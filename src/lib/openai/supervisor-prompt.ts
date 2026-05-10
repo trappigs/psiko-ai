@@ -20,6 +20,13 @@ export type Microskills = {
   advice_or_interpretation: MicroskillEntry;
 };
 
+export type FormulationComparison = {
+  aligned: string[];
+  student_caught: string[];
+  supervisor_added: string[];
+  verdict: string;
+};
+
 export type ParsedReport = {
   summary: string;
   strengths: string[];
@@ -27,6 +34,7 @@ export type ParsedReport = {
   missed_signals: string[];
   next_steps: string;
   microskills: Microskills;
+  formulation_comparison: FormulationComparison | null;
 };
 
 export const MICROSKILL_LABELS: Record<keyof Microskills, string> = {
@@ -53,13 +61,50 @@ export const MICROSKILL_DESC: Record<keyof Microskills, string> = {
     'Doğrudan tavsiye, yönlendirme, yorum ya da tanı vurgusu. (Erken seansta sıkça olması zayıflık sayılır.)',
 };
 
+export type StudentFormulation = {
+  presenting?: string;
+  hypothesis?: string;
+  patterns?: string;
+  next_session?: string;
+};
+
 export function buildSupervisorPrompt(
   caseSummary: CaseSummary,
-  transcript: TranscriptEntry[]
+  transcript: TranscriptEntry[],
+  studentFormulation?: StudentFormulation | null
 ): string {
   const lines = transcript
     .map((t) => `${t.role === 'student' ? 'S' : 'D'}: ${t.content}`)
     .join('\n');
+
+  const hasFormulation =
+    studentFormulation &&
+    (studentFormulation.presenting ||
+      studentFormulation.hypothesis ||
+      studentFormulation.patterns ||
+      studentFormulation.next_session);
+
+  const formulationBlock = hasFormulation
+    ? `
+
+ÖĞRENCİNİN KENDİ FORMÜLASYONU (seansın hemen ardından, raporu görmeden yazdığı):
+${studentFormulation?.presenting ? `· Sunulan sorun: ${studentFormulation.presenting}` : ''}
+${studentFormulation?.hypothesis ? `· Hipotez: ${studentFormulation.hypothesis}` : ''}
+${studentFormulation?.patterns ? `· Örüntüler: ${studentFormulation.patterns}` : ''}
+${studentFormulation?.next_session ? `· Sonraki seans: ${studentFormulation.next_session}` : ''}
+`
+    : '';
+
+  const comparisonSchema = hasFormulation
+    ? `,
+  "formulation_comparison": {
+    "aligned": ["öğrencinin formülasyonunda kendi gözleminle örtüşen 1-3 nokta — kısa, somut"],
+    "student_caught": ["öğrencinin yakaladığı, senin de katıldığın özellikle güçlü gözlem(ler) — kısa"],
+    "supervisor_added": ["öğrencinin formülasyonunda eksik kalan, senin görüp eklediğin gözlem(ler) — kısa"],
+    "verdict": "1-2 cümlelik özet hüküm: formülasyonu ne kadar isabetli, sonraki seansta neye dikkat etsin"
+  }`
+    : '';
+
   return `Sen psikoterapi süpervizörüsün. Aşağıdaki vaka için bir öğrencinin yaptığı seansı değerlendireceksin. Hem cesaretlendirici hem dürüst ol.
 
 VAKA: ${caseSummary.title}
@@ -68,7 +113,7 @@ ${caseSummary.diagnosis_hint ? `DEĞERLENDİRME NOTU: ${caseSummary.diagnosis_hi
 
 TRANSKRİPT (S = öğrenci, D = danışan):
 ${lines}
-
+${formulationBlock}
 GÖREV: Sadece aşağıdaki JSON formatında yanıt ver, başka hiçbir metin yazma:
 {
   "summary": "2-3 cümle özet",
@@ -83,7 +128,7 @@ GÖREV: Sadece aşağıdaki JSON formatında yanıt ver, başka hiçbir metin ya
     "empathy": { "count": <int>, "examples": [...] },
     "summary": { "count": <int>, "examples": [...] },
     "advice_or_interpretation": { "count": <int>, "examples": [...] }
-  }
+  }${comparisonSchema}
 }
 
 MİKROBECERİ TANIMLARI (sayım için bunlara dikkat et):
@@ -158,6 +203,25 @@ export function parseSupervisorReply(raw: string): ParsedReport | null {
       }
     : emptyMicroskills();
 
+  const fc = p.formulation_comparison as Record<string, unknown> | undefined;
+  const formulation_comparison: FormulationComparison | null =
+    fc &&
+    (Array.isArray(fc.aligned) ||
+      Array.isArray(fc.student_caught) ||
+      Array.isArray(fc.supervisor_added) ||
+      typeof fc.verdict === 'string')
+      ? {
+          aligned: Array.isArray(fc.aligned) ? (fc.aligned as unknown[]).map(String) : [],
+          student_caught: Array.isArray(fc.student_caught)
+            ? (fc.student_caught as unknown[]).map(String)
+            : [],
+          supervisor_added: Array.isArray(fc.supervisor_added)
+            ? (fc.supervisor_added as unknown[]).map(String)
+            : [],
+          verdict: typeof fc.verdict === 'string' ? fc.verdict : '',
+        }
+      : null;
+
   return {
     summary: p.summary,
     strengths: (p.strengths as unknown[]).map(String),
@@ -165,6 +229,7 @@ export function parseSupervisorReply(raw: string): ParsedReport | null {
     missed_signals: (p.missed_signals as unknown[]).map(String),
     next_steps: p.next_steps,
     microskills,
+    formulation_comparison,
   };
 }
 

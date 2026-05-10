@@ -4,7 +4,11 @@ import { ReportView } from '@/components/report/ReportView';
 import { loadFeedbackByMessageId } from '@/lib/message-feedback';
 import { parseFormulation } from '@/lib/formulation';
 import type { Json } from '@/lib/types';
-import type { Microskills, MicroskillEntry } from '@/lib/openai/supervisor-prompt';
+import type {
+  Microskills,
+  MicroskillEntry,
+  FormulationComparison,
+} from '@/lib/openai/supervisor-prompt';
 
 type SessionWithCase = {
   id: string;
@@ -21,6 +25,7 @@ type ReportRow = {
   missed_signals: Json;
   next_steps: string;
   microskills: Json;
+  formulation_comparison: Json;
 };
 
 type MessageRow = {
@@ -45,6 +50,27 @@ function parseSkill(j: unknown): MicroskillEntry {
     count: typeof r.count === 'number' ? Math.max(0, Math.floor(r.count)) : 0,
     examples: Array.isArray(r.examples) ? r.examples.map(String).slice(0, 6) : [],
   };
+}
+
+function parseFormulationComparison(j: Json): FormulationComparison | null {
+  if (!j || typeof j !== 'object' || Array.isArray(j)) return null;
+  const r = j as Record<string, unknown>;
+  const aligned = Array.isArray(r.aligned) ? (r.aligned as unknown[]).map(String) : [];
+  const student = Array.isArray(r.student_caught)
+    ? (r.student_caught as unknown[]).map(String)
+    : [];
+  const supervisor = Array.isArray(r.supervisor_added)
+    ? (r.supervisor_added as unknown[]).map(String)
+    : [];
+  const verdict = typeof r.verdict === 'string' ? r.verdict : '';
+  if (
+    aligned.length === 0 &&
+    student.length === 0 &&
+    supervisor.length === 0 &&
+    !verdict.trim()
+  )
+    return null;
+  return { aligned, student_caught: student, supervisor_added: supervisor, verdict };
 }
 
 function parseMicroskills(j: Json): Microskills {
@@ -83,7 +109,9 @@ export default async function Page({
 
   const { data: rawReport } = await sb
     .from('reports')
-    .select('summary, strengths, improvements, missed_signals, next_steps, microskills')
+    .select(
+      'summary, strengths, improvements, missed_signals, next_steps, microskills, formulation_comparison'
+    )
     .eq('session_id', sessionId)
     .maybeSingle();
   const report = rawReport as ReportRow | null;
@@ -113,6 +141,7 @@ export default async function Page({
               missed_signals: toStringList(report.missed_signals),
               next_steps: report.next_steps,
               microskills: parseMicroskills(report.microskills),
+              formulation_comparison: parseFormulationComparison(report.formulation_comparison),
             }
           : null
       }

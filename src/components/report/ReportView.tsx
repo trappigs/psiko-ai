@@ -4,7 +4,7 @@ import { REPORT_FOOTER } from '@/lib/disclaimer';
 import { MessageFeedback, type FeedbackState } from '@/components/chat/MessageFeedback';
 import { RichText } from '@/components/chat/RichText';
 import { MicroskillsBreakdown } from './MicroskillsBreakdown';
-import type { Microskills } from '@/lib/openai/supervisor-prompt';
+import type { Microskills, FormulationComparison } from '@/lib/openai/supervisor-prompt';
 import type { Formulation } from '@/lib/formulation';
 
 type Report = {
@@ -14,6 +14,7 @@ type Report = {
   missed_signals: string[];
   next_steps: string;
   microskills: Microskills;
+  formulation_comparison: FormulationComparison | null;
 } | null;
 
 type Msg = {
@@ -154,6 +155,69 @@ export function ReportView(props: {
           {report.summary}
         </p>
       </section>
+
+      {report.formulation_comparison && props.formulation && (
+        <section className="mb-16">
+          <p className="label-caps mb-6">Formülasyon karşılaştırması</p>
+
+          {report.formulation_comparison.verdict && (
+            <p className="font-display-italic text-2xl leading-snug mb-8 text-ink">
+              “{report.formulation_comparison.verdict}”
+            </p>
+          )}
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {report.formulation_comparison.aligned.length > 0 && (
+              <div>
+                <p className="label-caps mb-3 text-success">Buluştuğunuz</p>
+                <ul className="space-y-3">
+                  {report.formulation_comparison.aligned.map((s, i) => (
+                    <li
+                      key={i}
+                      className="text-sm leading-relaxed border-l-2 border-success pl-3"
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {report.formulation_comparison.student_caught.length > 0 && (
+              <div>
+                <p className="label-caps mb-3" style={{ color: 'var(--color-gilt)' }}>
+                  Senin yakaladığın
+                </p>
+                <ul className="space-y-3">
+                  {report.formulation_comparison.student_caught.map((s, i) => (
+                    <li
+                      key={i}
+                      className="text-sm leading-relaxed border-l-2 pl-3"
+                      style={{ borderColor: 'var(--color-gilt)' }}
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {report.formulation_comparison.supervisor_added.length > 0 && (
+              <div>
+                <p className="label-caps mb-3 text-accent">Süpervizörün eklediği</p>
+                <ul className="space-y-3">
+                  {report.formulation_comparison.supervisor_added.map((s, i) => (
+                    <li
+                      key={i}
+                      className="text-sm leading-relaxed border-l-2 border-accent pl-3"
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <div className="ornament mb-16" aria-hidden></div>
 

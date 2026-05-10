@@ -21,5 +21,6 @@ export function mockSupervisorReport() {
       summary: { count: 0, examples: [] },
       advice_or_interpretation: { count: 0, examples: [] },
     },
+    formulation_comparison: null,
   };
 }

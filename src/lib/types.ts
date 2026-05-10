@@ -168,6 +168,7 @@ export type Database = {
       }
       reports: {
         Row: {
+          formulation_comparison: Json | null
           generated_at: string
           id: string
           improvements: Json
@@ -180,6 +181,7 @@ export type Database = {
           summary: string
         }
         Insert: {
+          formulation_comparison?: Json | null
           generated_at?: string
           id?: string
           improvements?: Json
@@ -192,6 +194,7 @@ export type Database = {
           summary: string
         }
         Update: {
+          formulation_comparison?: Json | null
           generated_at?: string
           id?: string
           improvements?: Json
