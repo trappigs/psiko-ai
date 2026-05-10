@@ -36,9 +36,9 @@ export function SessionTimer({
   const s = String(secs % 60).padStart(2, '0');
 
   return (
-    <div className="flex items-center gap-3 justify-end">
-      <span className="label-caps">Kalan</span>
-      <div className="w-20 h-px bg-rule relative overflow-visible">
+    <div className="flex items-center gap-2 sm:gap-3 justify-end">
+      <span className="label-caps hidden sm:inline">Kalan</span>
+      <div className="hidden sm:block w-20 h-px bg-rule relative overflow-visible">
         <div
           className="absolute top-1/2 left-0 -translate-y-1/2 h-px transition-[width] duration-1000 ease-linear"
           style={{
@@ -49,7 +49,7 @@ export function SessionTimer({
         />
       </div>
       <span
-        className={`font-mono text-sm tabular-nums ${
+        className={`font-mono text-xs sm:text-sm tabular-nums ${
           lowTime ? 'text-accent' : 'text-ink'
         }`}
       >

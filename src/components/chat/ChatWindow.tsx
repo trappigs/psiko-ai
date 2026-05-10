@@ -146,24 +146,24 @@ export function ChatWindow(props: {
   return (
     <div className="h-[calc(100vh-2rem)] flex flex-col">
       <header className="border-b border-rule bg-paper/95 backdrop-blur">
-        <div className="max-w-3xl mx-auto px-4 md:px-6 py-3 grid grid-cols-[auto_1fr_auto] items-center gap-4">
+        <div className="max-w-3xl mx-auto px-3 md:px-6 py-3 grid grid-cols-[auto_1fr_auto] items-center gap-2 sm:gap-4">
           <a href="/" className="btn-quiet text-xs">
-            ← Vakalar
+            ← <span className="hidden sm:inline">Vakalar</span>
           </a>
           <div className="text-center min-w-0">
-            <p className="label-caps">Seans</p>
-            <h2 className="font-display-italic text-base leading-tight truncate">
+            <p className="label-caps hidden sm:block">Seans</p>
+            <h2 className="font-display-italic text-sm sm:text-base leading-tight truncate">
               {props.caseSheet.title}
             </h2>
           </div>
-          <div className="flex items-center gap-4 justify-end">
+          <div className="flex items-center gap-2 sm:gap-4 justify-end">
             <button
               onClick={() => setSheetOpen(true)}
-              className="btn-quiet text-xs"
+              className="btn-quiet text-xs whitespace-nowrap"
               aria-label="Vaka dosyası"
               title="Vaka dosyasını aç (her an erişebilirsin)"
             >
-              Dosya ☰
+              <span className="hidden sm:inline">Dosya </span>☰
             </button>
             <SessionTimer startedAt={props.startedAt} onExpire={() => setExpired(true)} />
           </div>

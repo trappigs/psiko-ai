@@ -46,20 +46,22 @@ export default async function HomePage() {
   const starter = isFirstTime ? list.find((c) => c.difficulty === 'easy') ?? list[0] : null;
 
   return (
-    <main className="max-w-6xl mx-auto px-6 md:px-10 py-8 md:py-12">
-      <nav className="flex items-center justify-between mb-20">
-        <p className="label-caps-strong">Bereketli Topraklar — Psikoloji Pratiği</p>
-        <div className="flex items-center gap-6">
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-12">
+      <nav className="flex items-center justify-between gap-4 mb-12 md:mb-20 flex-wrap">
+        <p className="label-caps-strong">
+          <span className="hidden sm:inline">Bereketli Topraklar — </span>Psikoloji Pratiği
+        </p>
+        <div className="flex items-center gap-4 sm:gap-6 text-sm">
           <a href="/ilerleme" className="btn-quiet">İlerleme</a>
           <a href="/gecmis" className="btn-quiet">Geçmiş</a>
           <a href="/ayarlar" className="btn-quiet">Ayarlar</a>
         </div>
       </nav>
 
-      <header className="grid md:grid-cols-12 gap-8 mb-24 md:mb-32 items-end">
+      <header className="grid md:grid-cols-12 gap-8 mb-16 md:mb-32 items-end">
         <div className="md:col-span-9">
-          <p className="label-caps mb-6">Vol. 01 · Vaka kütüphanesi</p>
-          <h1 className="font-display leading-[0.92] text-[3.5rem] md:text-[7rem] tracking-tight">
+          <p className="label-caps mb-4 md:mb-6">Vol. 01 · Vaka kütüphanesi</p>
+          <h1 className="font-display leading-[0.95] text-[2.75rem] sm:text-[4rem] md:text-[7rem] tracking-tight">
             Bugün
             <br />
             <em className="font-display-italic text-accent">kim</em> ile
@@ -68,14 +70,14 @@ export default async function HomePage() {
           </h1>
         </div>
         <div className="md:col-span-3 md:text-right">
-          <p className="font-display-italic text-2xl md:text-3xl leading-tight text-ink-soft">
+          <p className="font-display-italic text-xl md:text-3xl leading-tight text-ink-soft">
             “Bir vaka seç,
             <br />
             seansı yaşa,
             <br />
             süpervizörü dinle.”
           </p>
-          <p className="label-caps mt-6">— Editör</p>
+          <p className="label-caps mt-4 md:mt-6">— Editör</p>
         </div>
       </header>
 
