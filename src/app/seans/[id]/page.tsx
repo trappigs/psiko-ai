@@ -3,12 +3,25 @@ import { redirect, notFound } from 'next/navigation';
 import { ChatWindow } from '@/components/chat/ChatWindow';
 import { loadFeedbackByMessageId } from '@/lib/message-feedback';
 import type { Msg } from '@/components/chat/MessageList';
+import type { CaseSheet } from '@/components/case/CaseBriefing';
 
 type SessionRow = {
   id: string;
   status: 'in_progress' | 'completed' | 'abandoned';
   started_at: string;
-  case: { id: string; title: string } | null;
+  case: {
+    id: string;
+    title: string;
+    presenting: string;
+    diagnosis_hint: string | null;
+    background: string;
+    personality: string;
+    speech_style: string;
+    difficulty: 'easy' | 'medium' | 'hard';
+    insight_level: string | null;
+    defense_style: string | null;
+    register: string | null;
+  } | null;
 };
 
 type MessageRow = {
@@ -28,12 +41,28 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const { data } = await sb
     .from('sessions')
-    .select('id, status, started_at, case:cases(id, title)')
+    .select(
+      'id, status, started_at, case:cases(id, title, presenting, diagnosis_hint, background, personality, speech_style, difficulty, insight_level, defense_style, register)'
+    )
     .eq('id', id)
     .single();
   const session = data as unknown as SessionRow | null;
-  if (!session) notFound();
+  if (!session || !session.case) notFound();
   if (session.status === 'completed') redirect(`/rapor/${id}`);
+
+  const caseSheet: CaseSheet = {
+    id: session.case.id,
+    title: session.case.title,
+    presenting: session.case.presenting,
+    diagnosis_hint: session.case.diagnosis_hint,
+    background: session.case.background,
+    personality: session.case.personality,
+    speech_style: session.case.speech_style,
+    difficulty: session.case.difficulty,
+    insight_level: session.case.insight_level,
+    defense_style: session.case.defense_style,
+    register: session.case.register,
+  };
 
   const { data: messages } = await sb
     .from('messages')
@@ -59,7 +88,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   return (
     <ChatWindow
       sessionId={id}
-      caseTitle={session.case?.title ?? ''}
+      caseSheet={caseSheet}
       startedAt={session.started_at}
       initialMessages={initialMessages}
     />

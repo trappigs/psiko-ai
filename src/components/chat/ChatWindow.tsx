@@ -4,6 +4,8 @@ import { MessageList, type Msg } from './MessageList';
 import { MessageInput } from './MessageInput';
 import { SessionTimer } from './SessionTimer';
 import { EndSessionButton } from './EndSessionButton';
+import { CaseSheetDrawer } from '@/components/case/CaseSheetDrawer';
+import type { CaseSheet } from '@/components/case/CaseBriefing';
 import { useRouter } from 'next/navigation';
 
 const MSG_ID_PATTERN = /\n\n__MSG_ID__:([0-9a-f-]{36})__$/;
@@ -19,7 +21,7 @@ function splitMsgIdMarker(text: string): { visible: string; msgId: string | unde
 
 export function ChatWindow(props: {
   sessionId: string;
-  caseTitle: string;
+  caseSheet: CaseSheet;
   startedAt: string;
   initialMessages: Msg[];
 }) {
@@ -27,6 +29,7 @@ export function ChatWindow(props: {
   const [messages, setMessages] = useState<Msg[]>(props.initialMessages);
   const [streaming, setStreaming] = useState(false);
   const [expired, setExpired] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const mountedRef = useRef(true);
   const abortRef = useRef<AbortController | null>(null);
@@ -126,21 +129,35 @@ export function ChatWindow(props: {
   return (
     <div className="h-[calc(100vh-2rem)] flex flex-col">
       <header className="border-b border-rule bg-paper/95 backdrop-blur">
-        <div className="max-w-3xl mx-auto px-4 md:px-6 py-3 grid grid-cols-3 items-center gap-4">
-          <a href="/" className="btn-quiet text-xs justify-self-start">
+        <div className="max-w-3xl mx-auto px-4 md:px-6 py-3 grid grid-cols-[auto_1fr_auto] items-center gap-4">
+          <a href="/" className="btn-quiet text-xs">
             ← Vakalar
           </a>
           <div className="text-center min-w-0">
             <p className="label-caps">Seans</p>
             <h2 className="font-display-italic text-base leading-tight truncate">
-              {props.caseTitle}
+              {props.caseSheet.title}
             </h2>
           </div>
-          <div className="justify-self-end">
+          <div className="flex items-center gap-4 justify-end">
+            <button
+              onClick={() => setSheetOpen(true)}
+              className="btn-quiet text-xs"
+              aria-label="Vaka dosyası"
+              title="Vaka dosyasını aç (her an erişebilirsin)"
+            >
+              Dosya ☰
+            </button>
             <SessionTimer startedAt={props.startedAt} onExpire={() => setExpired(true)} />
           </div>
         </div>
       </header>
+
+      <CaseSheetDrawer
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        caseData={props.caseSheet}
+      />
 
       <MessageList messages={messages} />
 

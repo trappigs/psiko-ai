@@ -96,9 +96,9 @@ export default async function HomePage() {
           {list.map((c, i) => (
             <li key={c.id}>
               <a
-                href={`/seans/start?case=${c.id}`}
+                href={`/vaka/${c.id}`}
                 className="index-row group"
-                aria-label={`${c.title} — seansa başla`}
+                aria-label={`${c.title} — vaka dosyasını aç`}
               >
                 <span className="index-num">{String(i + 1).padStart(2, '0')}</span>
                 <span className="min-w-0">
