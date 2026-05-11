@@ -16,7 +16,20 @@ type SessionWithCase = {
   status: 'in_progress' | 'completed' | 'abandoned';
   user_id: string;
   formulation: unknown;
-  case: { id: string; title: string } | null;
+  case: {
+    id: string;
+    title: string;
+    source: 'curated' | 'ai_generated';
+    presenting: string;
+    background: string;
+    personality: string;
+    speech_style: string;
+    goals_hidden: string;
+    insight_level: string | null;
+    defense_style: string | null;
+    register: string | null;
+    diagnosis_hint: string | null;
+  } | null;
 };
 
 type ReportRow = {
@@ -101,7 +114,7 @@ export default async function Page({
 
   const { data } = await sb
     .from('sessions')
-    .select('id, status, user_id, formulation, case:cases(id, title)')
+    .select('id, status, user_id, formulation, case:cases(id, title, source, presenting, background, personality, speech_style, goals_hidden, insight_level, defense_style, register, diagnosis_hint)')
     .eq('id', sessionId)
     .single();
   const session = data as unknown as SessionWithCase | null;
@@ -156,6 +169,21 @@ export default async function Page({
           created_at: m.created_at,
           feedback: m.role === 'client' ? feedbackByMsgId[m.id] ?? null : null,
         }))}
+        hiddenDossier={
+          session.case && session.case.source === 'ai_generated'
+            ? {
+                presenting: session.case.presenting,
+                background: session.case.background,
+                personality: session.case.personality,
+                speech_style: session.case.speech_style,
+                goals_hidden: session.case.goals_hidden,
+                insight_level: session.case.insight_level,
+                defense_style: session.case.defense_style,
+                register: session.case.register,
+                diagnosis_hint: session.case.diagnosis_hint,
+              }
+            : null
+        }
       />
     </AppShell>
   );

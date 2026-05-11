@@ -25,11 +25,32 @@ type Msg = {
   feedback?: FeedbackState;
 };
 
+export type HiddenDossier = {
+  presenting: string;
+  background: string;
+  personality: string;
+  speech_style: string;
+  goals_hidden: string;
+  insight_level: string | null;
+  defense_style: string | null;
+  register: string | null;
+  diagnosis_hint: string | null;
+};
+
 function FormulationField({ label, text }: { label: string; text: string }) {
   return (
     <div>
       <p className="label-caps mb-1.5">{label}</p>
       <p className="font-display-italic leading-relaxed text-ink">{text}</p>
+    </div>
+  );
+}
+
+function DossierRow({ label, text }: { label: string; text: string }) {
+  return (
+    <div>
+      <p className="label-caps mb-1">{label}</p>
+      <p className="text-base leading-relaxed">{text}</p>
     </div>
   );
 }
@@ -41,6 +62,7 @@ export function ReportView(props: {
   formulation: Formulation | null;
   report: Report;
   messages: Msg[];
+  hiddenDossier?: HiddenDossier | null;
 }) {
   const [report, setReport] = useState<Report>(props.report);
   const [loading, setLoading] = useState(false);
@@ -311,6 +333,34 @@ export function ReportView(props: {
           ))}
         </div>
       </details>
+
+      {props.hiddenDossier && (
+        <section className="surface-deep px-6 py-6 mb-16">
+          <p className="label-caps mb-2 text-accent">Gizli dosya açıklandı</p>
+          <p className="text-sm text-muted mb-6">
+            Bu seansı dosyasını görmeden yürüttün. Aşağıda danışanın gerçek profili:
+          </p>
+          <div className="space-y-5">
+            <DossierRow label="Sunulan sorun" text={props.hiddenDossier.presenting} />
+            <DossierRow label="Geçmiş / aile" text={props.hiddenDossier.background} />
+            <DossierRow label="Kişilik" text={props.hiddenDossier.personality} />
+            <DossierRow label="Konuşma stili" text={props.hiddenDossier.speech_style} />
+            <DossierRow label="Gizli mesele" text={props.hiddenDossier.goals_hidden} />
+            {props.hiddenDossier.defense_style && (
+              <DossierRow label="Baskın savunma" text={props.hiddenDossier.defense_style} />
+            )}
+            {props.hiddenDossier.insight_level && (
+              <DossierRow label="İçgörü" text={props.hiddenDossier.insight_level} />
+            )}
+            {props.hiddenDossier.register && (
+              <DossierRow label="Söylem kaydı" text={props.hiddenDossier.register} />
+            )}
+            {props.hiddenDossier.diagnosis_hint && (
+              <DossierRow label="Klinik çağrışım" text={props.hiddenDossier.diagnosis_hint} />
+            )}
+          </div>
+        </section>
+      )}
 
       <p className="text-xs text-muted italic mb-10">{REPORT_FOOTER}</p>
 
