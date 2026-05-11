@@ -19,4 +19,13 @@ describe('mockGeneratedCase', () => {
     const blob = (r.case.presenting + ' ' + r.case.background).toLowerCase();
     expect(blob).toContain('kayıp');
   });
+  it('sets low insight_level and rationalization defense for hard', () => {
+    const r = mockGeneratedCase({ difficulty: 'hard' });
+    expect(r.case.insight_level).toBe('low');
+    expect(r.case.defense_style).toBe('rasyonalizasyon');
+  });
+  it('returns null diagnosis_hint by default', () => {
+    const r = mockGeneratedCase({ difficulty: 'easy' });
+    expect(r.case.diagnosis_hint).toBeNull();
+  });
 });
