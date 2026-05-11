@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
 import { CaseBriefing, type CaseSheet } from '@/components/case/CaseBriefing';
+import { AppShell } from '@/components/shell/AppShell';
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -43,12 +44,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   };
 
   return (
-    <main className="max-w-2xl mx-auto px-6 md:px-10 py-10 md:py-14">
-      <nav className="mb-12">
-        <a href="/" className="btn-quiet text-xs">← Vakalar</a>
-      </nav>
+    <AppShell userEmail={user.email}>
+      <div className="max-w-2xl mx-auto px-6 md:px-10 py-8 md:py-12">
+        <nav className="mb-8">
+          <a href="/" className="btn-quiet text-xs">← Tüm vakalar</a>
+        </nav>
 
-      <CaseBriefing c={sheet} index={idx >= 0 ? idx + 1 : undefined} />
+        <CaseBriefing c={sheet} index={idx >= 0 ? idx + 1 : undefined} />
 
       <hr className="rule-soft mt-12 mb-10" />
 
@@ -83,6 +85,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           Hazırım, seansa başla →
         </a>
       </div>
-    </main>
+      </div>
+    </AppShell>
   );
 }

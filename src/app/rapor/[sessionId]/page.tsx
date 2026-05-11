@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
 import { ReportView } from '@/components/report/ReportView';
+import { AppShell } from '@/components/shell/AppShell';
 import { loadFeedbackByMessageId } from '@/lib/message-feedback';
 import { parseFormulation } from '@/lib/formulation';
 import type { Json } from '@/lib/types';
@@ -127,31 +128,35 @@ export default async function Page({
   );
 
   return (
-    <ReportView
-      sessionId={sessionId}
-      caseId={session.case?.id ?? ''}
-      caseTitle={session.case?.title ?? ''}
-      formulation={formulation}
-      report={
-        report
-          ? {
-              summary: report.summary,
-              strengths: toStringList(report.strengths),
-              improvements: toStringList(report.improvements),
-              missed_signals: toStringList(report.missed_signals),
-              next_steps: report.next_steps,
-              microskills: parseMicroskills(report.microskills),
-              formulation_comparison: parseFormulationComparison(report.formulation_comparison),
-            }
-          : null
-      }
-      messages={messages.map((m) => ({
-        id: m.id,
-        role: m.role,
-        content: m.content,
-        created_at: m.created_at,
-        feedback: m.role === 'client' ? feedbackByMsgId[m.id] ?? null : null,
-      }))}
-    />
+    <AppShell userEmail={user.email}>
+      <ReportView
+        sessionId={sessionId}
+        caseId={session.case?.id ?? ''}
+        caseTitle={session.case?.title ?? ''}
+        formulation={formulation}
+        report={
+          report
+            ? {
+                summary: report.summary,
+                strengths: toStringList(report.strengths),
+                improvements: toStringList(report.improvements),
+                missed_signals: toStringList(report.missed_signals),
+                next_steps: report.next_steps,
+                microskills: parseMicroskills(report.microskills),
+                formulation_comparison: parseFormulationComparison(
+                  report.formulation_comparison
+                ),
+              }
+            : null
+        }
+        messages={messages.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          created_at: m.created_at,
+          feedback: m.role === 'client' ? feedbackByMsgId[m.id] ?? null : null,
+        }))}
+      />
+    </AppShell>
   );
 }

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { SkillTimeline } from '@/components/progress/SkillTimeline';
+import { AppShell } from '@/components/shell/AppShell';
 import {
   type Microskills,
   MICROSKILL_LABELS,
@@ -91,21 +92,18 @@ export default async function Page() {
       : 0;
 
   return (
-    <main className="max-w-4xl mx-auto px-6 md:px-10 py-10 md:py-14">
-      <nav className="flex items-center justify-between mb-16">
-        <a href="/" className="btn-quiet">← Vakalar</a>
-        <p className="label-caps">Pratik · İlerleme</p>
-      </nav>
-
-      <header className="mb-16">
-        <p className="label-caps mb-3">Beceri gelişimi</p>
-        <h1 className="font-display text-5xl md:text-6xl leading-[0.98]">
-          <em className="font-display-italic">İlerleme</em> kıvrımları.
-        </h1>
-        <p className="text-ink-soft mt-4 max-w-md text-sm leading-relaxed">
-          Her seansta süpervizör mikro becerilerini sayar. Zaman içinde nelerin değiştiğini görüyorsun.
-        </p>
-      </header>
+    <AppShell userEmail={user.email}>
+      <div className="max-w-4xl mx-auto px-6 md:px-10 py-8 md:py-12">
+        <header className="mb-10 md:mb-14">
+          <p className="label-caps mb-3">Beceri gelişimi</p>
+          <h1 className="font-display text-4xl md:text-5xl leading-[1.05] tracking-tight">
+            İlerleme <em className="font-display-italic text-accent">kıvrımları</em>
+          </h1>
+          <p className="text-ink-soft mt-3 text-sm md:text-base max-w-lg">
+            Her seansta süpervizör mikro becerilerini sayar. Zaman içinde nelerin değiştiğini
+            görüyorsun.
+          </p>
+        </header>
 
       {totalReports < 2 ? (
         <div className="surface-deep p-10 text-center">
@@ -209,6 +207,7 @@ export default async function Page() {
           </section>
         </>
       )}
-    </main>
+      </div>
+    </AppShell>
   );
 }
