@@ -30,7 +30,24 @@ export type MockGenInput = {
   themeHint?: string;
 };
 
-export function mockGeneratedCase(input: MockGenInput) {
+export type MockGenerateCaseResult = {
+  case: {
+    title: string;
+    presenting: string;
+    background: string;
+    personality: string;
+    speech_style: string;
+    goals_hidden: string;
+    insight_level: string;
+    defense_style: string;
+    register: string;
+    diagnosis_hint: string | null;
+    difficulty: 'easy' | 'medium' | 'hard';
+  };
+  token_count: number;
+};
+
+export function mockGeneratedCase(input: MockGenInput): MockGenerateCaseResult {
   const theme = (input.themeHint ?? '').trim();
   const presenting = theme
     ? `Son zamanlarda ${theme} ile ilgili kendini kötü hissediyor, ne yapacağını bilmiyor.`
