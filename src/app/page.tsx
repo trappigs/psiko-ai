@@ -4,6 +4,7 @@ import { CaseIndex } from '@/components/case/CaseIndex';
 import { WelcomeModal } from '@/components/onboarding/WelcomeModal';
 import { StarterHint } from '@/components/onboarding/StarterHint';
 import { AppShell } from '@/components/shell/AppShell';
+import { FreeSessionTrigger } from '@/components/case/FreeSessionTrigger';
 
 export default async function HomePage() {
   const sb = await createClient();
@@ -75,6 +76,8 @@ export default async function HomePage() {
             </a>
           </div>
         )}
+
+        <FreeSessionTrigger />
 
         {starter && <StarterHint starter={starter} />}
 
