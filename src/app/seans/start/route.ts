@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   } = await sb.auth.getUser();
   if (!user) return NextResponse.redirect(new URL('/login', request.url));
   try {
-    const { session_id } = await startSession(user.id, caseId);
+    const { session_id } = await startSession(user.id, { mode: 'curated', caseId });
     return NextResponse.redirect(new URL(`/seans/${session_id}`, request.url));
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'internal';
