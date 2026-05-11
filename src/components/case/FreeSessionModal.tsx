@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 type Difficulty = 'easy' | 'medium' | 'hard';
@@ -16,6 +16,15 @@ export function FreeSessionModal({ open, onClose }: { open: boolean; onClose: ()
   const [themeHint, setThemeHint] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open || loading) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, loading, onClose]);
 
   async function start() {
     setLoading(true);
@@ -52,7 +61,7 @@ export function FreeSessionModal({ open, onClose }: { open: boolean; onClose: ()
   return (
     <>
       <div onClick={loading ? undefined : onClose} aria-hidden className="fixed inset-0 bg-ink/40 backdrop-blur-sm z-40" />
-      <div role="dialog" aria-label="Serbest seans" className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-paper border border-rule shadow-2xl rounded-md z-50 p-6">
+      <div role="dialog" aria-modal="true" aria-label="Serbest seans" className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-paper border border-rule shadow-2xl rounded-md z-50 p-6">
         <p className="label-caps mb-2">Serbest seans</p>
         <h2 className="font-display text-2xl mb-1">Sürpriz <em className="font-display-italic">danışan</em></h2>
         <p className="text-sm text-muted mb-6">Vakanın dosyası seans sonunda açılır.</p>
