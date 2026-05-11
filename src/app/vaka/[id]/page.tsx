@@ -14,12 +14,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { data: c } = await sb
     .from('cases')
     .select(
-      'id, title, presenting, diagnosis_hint, background, personality, speech_style, difficulty, insight_level, defense_style, register, created_at'
+      'id, title, presenting, diagnosis_hint, background, personality, speech_style, difficulty, insight_level, defense_style, register, created_at, source'
     )
     .eq('id', id)
     .eq('is_active', true)
     .maybeSingle();
   if (!c) notFound();
+  if (c.source === 'ai_generated') notFound();
 
   // determine ordinal index in the catalogue
   const { data: order } = await sb

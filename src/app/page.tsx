@@ -16,6 +16,7 @@ export default async function HomePage() {
     .from('cases')
     .select('id, title, presenting, difficulty')
     .eq('is_active', true)
+    .eq('source', 'curated')
     .order('created_at', { ascending: true });
 
   const { data: openSession } = await sb
