@@ -46,6 +46,12 @@ describe('startSession', () => {
   it('curated mode inserts session with given caseId', async () => {
     const r = await startSession('user-1', { mode: 'curated', caseId: 'case-X' });
     expect(r.session_id).toBe('session-id');
+    const supabaseService = await import('@/lib/supabase/service');
+    // @ts-expect-error __mocks is a test-only export
+    const { casesInsert, sessionsInsert, usageDailyUpsert } = supabaseService.__mocks;
+    expect(casesInsert).toHaveBeenCalledTimes(0);
+    expect(sessionsInsert).toHaveBeenCalledWith(expect.objectContaining({ case_id: 'case-X', user_id: 'user-1' }));
+    expect(usageDailyUpsert.mock.calls[0][0]).toMatchObject({ token_count: 0 });
   });
 
   it('free mode generates a case, inserts it, then opens session', async () => {
@@ -53,11 +59,23 @@ describe('startSession', () => {
     expect(r.session_id).toBe('session-id');
     const { generateCase } = await import('@/lib/openai/case-generator');
     expect(generateCase).toHaveBeenCalledWith({ difficulty: 'easy', themeHint: undefined });
+    const supabaseService = await import('@/lib/supabase/service');
+    // @ts-expect-error __mocks is a test-only export
+    const { casesInsert, sessionsInsert, usageDailyUpsert } = supabaseService.__mocks;
+    expect(casesInsert).toHaveBeenCalledTimes(1);
+    expect(casesInsert).toHaveBeenCalledWith(expect.objectContaining({ source: 'ai_generated', is_active: false, difficulty: 'easy' }));
+    expect(sessionsInsert).toHaveBeenCalledWith(expect.objectContaining({ case_id: 'generated-case-id', user_id: 'user-1' }));
+    expect(usageDailyUpsert.mock.calls[0][0]).toMatchObject({ token_count: 800 });
   });
 
   it('free mode throws if generation fails (no session created)', async () => {
     const { generateCase } = await import('@/lib/openai/case-generator');
     (generateCase as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('generation_failed:x'));
     await expect(startSession('user-1', { mode: 'free', difficulty: 'medium' })).rejects.toThrow(/generation_failed/);
+    const supabaseService = await import('@/lib/supabase/service');
+    // @ts-expect-error __mocks is a test-only export
+    const { casesInsert, sessionsInsert } = supabaseService.__mocks;
+    expect(casesInsert).toHaveBeenCalledTimes(0);
+    expect(sessionsInsert).toHaveBeenCalledTimes(0);
   });
 });
