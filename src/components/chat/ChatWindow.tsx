@@ -24,6 +24,7 @@ export function ChatWindow(props: {
   caseSheet: CaseSheet;
   startedAt: string;
   initialMessages: Msg[];
+  freeMode?: boolean;
 }) {
   const router = useRouter();
   const [messages, setMessages] = useState<Msg[]>(props.initialMessages);
@@ -157,24 +158,32 @@ export function ChatWindow(props: {
             </h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-4 justify-end">
-            <button
-              onClick={() => setSheetOpen(true)}
-              className="btn-quiet text-xs whitespace-nowrap"
-              aria-label="Vaka dosyası"
-              title="Vaka dosyasını aç (her an erişebilirsin)"
-            >
-              <span className="hidden sm:inline">Dosya </span>☰
-            </button>
+            {props.freeMode ? (
+              <span className="label-caps text-accent whitespace-nowrap" aria-label="Serbest seans">
+                <span className="hidden sm:inline">Serbest seans · </span>dosya seans sonu
+              </span>
+            ) : (
+              <button
+                onClick={() => setSheetOpen(true)}
+                className="btn-quiet text-xs whitespace-nowrap"
+                aria-label="Vaka dosyası"
+                title="Vaka dosyasını aç (her an erişebilirsin)"
+              >
+                <span className="hidden sm:inline">Dosya </span>☰
+              </button>
+            )}
             <SessionTimer startedAt={props.startedAt} onExpire={() => setExpired(true)} />
           </div>
         </div>
       </header>
 
-      <CaseSheetDrawer
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
-        caseData={props.caseSheet}
-      />
+      {!props.freeMode && (
+        <CaseSheetDrawer
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          caseData={props.caseSheet}
+        />
+      )}
 
       <MessageList messages={messages} />
 

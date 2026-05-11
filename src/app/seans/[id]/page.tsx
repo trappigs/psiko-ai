@@ -21,6 +21,7 @@ type SessionRow = {
     insight_level: string | null;
     defense_style: string | null;
     register: string | null;
+    source: 'curated' | 'ai_generated';
   } | null;
 };
 
@@ -42,7 +43,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { data } = await sb
     .from('sessions')
     .select(
-      'id, status, started_at, case:cases(id, title, presenting, diagnosis_hint, background, personality, speech_style, difficulty, insight_level, defense_style, register)'
+      'id, status, started_at, case:cases(id, title, presenting, diagnosis_hint, background, personality, speech_style, difficulty, insight_level, defense_style, register, source)'
     )
     .eq('id', id)
     .single();
@@ -91,6 +92,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       caseSheet={caseSheet}
       startedAt={session.started_at}
       initialMessages={initialMessages}
+      freeMode={session.case.source === 'ai_generated'}
     />
   );
 }
