@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
 import { AppShell } from '@/components/shell/AppShell';
-import { CloseSeriesButton } from '@/components/series/CloseSeriesButton';
 import { LivingFormulationCard } from '@/components/series/LivingFormulationCard';
 import { StartNextSessionButton } from '@/components/series/StartNextSessionButton';
 import { parseFormulation } from '@/lib/formulation';
@@ -141,6 +140,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </ol>
         )}
 
+        {!isOpen && (
+          <div className="pt-6 border-t border-rule mb-10">
+            <a href={`/seri/${series.id}/kapanis`} className="btn-primary">
+              Kapanış raporunu gör →
+            </a>
+          </div>
+        )}
+
         {isOpen && (
           <div className="flex items-center justify-between gap-4 flex-wrap pt-6 border-t border-rule">
             {activeSession ? (
@@ -154,7 +161,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                 Yeni seans başlat →
               </a>
             )}
-            <CloseSeriesButton seriesId={series.id} />
+            <a href={`/seri/${series.id}/kapat-onay`} className="btn-quiet">
+              Vakayı kapat
+            </a>
           </div>
         )}
       </div>
