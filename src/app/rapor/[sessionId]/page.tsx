@@ -16,6 +16,7 @@ type SessionWithCase = {
   status: 'in_progress' | 'completed' | 'abandoned';
   user_id: string;
   formulation: unknown;
+  series_id: string;
   case: {
     id: string;
     title: string;
@@ -114,12 +115,19 @@ export default async function Page({
 
   const { data } = await sb
     .from('sessions')
-    .select('id, status, user_id, formulation, case:cases(id, title, source, presenting, background, personality, speech_style, goals_hidden, insight_level, defense_style, register, diagnosis_hint)')
+    .select('id, status, user_id, formulation, series_id, case:cases(id, title, source, presenting, background, personality, speech_style, goals_hidden, insight_level, defense_style, register, diagnosis_hint)')
     .eq('id', sessionId)
     .single();
   const session = data as unknown as SessionWithCase | null;
   if (!session || session.user_id !== user.id) notFound();
   const formulation = parseFormulation(session.formulation);
+
+  const { data: seriesRow } = await sb
+    .from('case_series')
+    .select('id, status')
+    .eq('id', session.series_id)
+    .maybeSingle();
+  const seriesOpen = seriesRow?.status === 'open';
 
   const { data: rawReport } = await sb
     .from('reports')
@@ -146,6 +154,9 @@ export default async function Page({
         sessionId={sessionId}
         caseId={session.case?.id ?? ''}
         caseTitle={session.case?.title ?? ''}
+        seriesId={session.series_id}
+        seriesOpen={seriesOpen}
+        caseSource={session.case?.source ?? 'curated'}
         formulation={formulation}
         report={
           report

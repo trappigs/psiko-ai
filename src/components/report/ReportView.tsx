@@ -59,6 +59,9 @@ export function ReportView(props: {
   sessionId: string;
   caseId: string;
   caseTitle: string;
+  seriesId: string;
+  seriesOpen: boolean;
+  caseSource: 'curated' | 'ai_generated';
   formulation: Formulation | null;
   report: Report;
   messages: Msg[];
@@ -139,7 +142,7 @@ export function ReportView(props: {
 
   return (
     <main className="max-w-2xl mx-auto px-6 md:px-10 py-10 md:py-16">
-      <a href="/" className="btn-quiet text-xs">← Vakalar</a>
+      <a href={`/seri/${props.seriesId}`} className="btn-quiet text-xs">← Seri sayfası</a>
 
       <header className="mt-12 mb-16">
         <p className="label-caps mb-4">Süpervizör raporu</p>
@@ -359,6 +362,18 @@ export function ReportView(props: {
               <DossierRow label="Klinik çağrışım" text={props.hiddenDossier.diagnosis_hint} />
             )}
           </div>
+        </section>
+      )}
+
+      {props.caseSource === 'ai_generated' && props.seriesOpen && (
+        <section className="surface px-6 py-6 mb-16 text-center">
+          <p className="font-display text-xl mb-2">Bu danışanla devam et</p>
+          <p className="text-sm text-muted mb-5">
+            Aynı kişiyle bir sonraki seansa geçebilirsin. AI önceki seansı hatırlar.
+          </p>
+          <a href={`/seri/${props.seriesId}`} className="btn-primary">
+            Seri sayfasına git →
+          </a>
         </section>
       )}
 
