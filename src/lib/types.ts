@@ -34,6 +34,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      case_series: {
+        Row: {
+          case_id: string
+          closed_at: string | null
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          case_id: string
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          case_id?: string
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_series_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_series_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cases: {
         Row: {
           background: string
@@ -246,6 +288,7 @@ export type Database = {
           formulation: Json | null
           id: string
           message_count: number
+          series_id: string
           started_at: string
           status: string
           user_id: string
@@ -256,6 +299,7 @@ export type Database = {
           formulation?: Json | null
           id?: string
           message_count?: number
+          series_id: string
           started_at?: string
           status?: string
           user_id: string
@@ -266,6 +310,7 @@ export type Database = {
           formulation?: Json | null
           id?: string
           message_count?: number
+          series_id?: string
           started_at?: string
           status?: string
           user_id?: string
@@ -276,6 +321,13 @@ export type Database = {
             columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "case_series"
             referencedColumns: ["id"]
           },
           {
