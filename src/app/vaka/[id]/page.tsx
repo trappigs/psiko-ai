@@ -22,6 +22,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!c) notFound();
   if (c.source === 'ai_generated') notFound();
 
+  const { data: openSeries } = await sb
+    .from('case_series')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('case_id', id)
+    .eq('status', 'open')
+    .maybeSingle();
+
   // determine ordinal index in the catalogue
   const { data: order } = await sb
     .from('cases')
@@ -82,9 +90,15 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           Seansı başlattığında 45 dakikalık süre sayacı işlemeye başlar. Vaka dosyasına seans
           sırasında üst köşeden geri dönebilirsin.
         </p>
-        <a href={`/seans/start?case=${c.id}`} className="btn-primary">
-          Hazırım, seansa başla →
-        </a>
+        {openSeries ? (
+          <a href={`/seri/${openSeries.id}`} className="btn-primary">
+            Takibe devam et →
+          </a>
+        ) : (
+          <a href={`/seans/start?case=${c.id}`} className="btn-primary">
+            Hazırım, seansa başla →
+          </a>
+        )}
       </div>
       </div>
     </AppShell>
