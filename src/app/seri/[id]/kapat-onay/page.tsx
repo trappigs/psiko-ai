@@ -53,7 +53,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <em className="font-display-italic">{series.case.title}</em>
           </h1>
           <p className="text-ink-soft mt-3 text-sm md:text-base max-w-lg leading-relaxed">
-            {sessionCount ?? 0} seans yaptın. Bir sonraki adımda süpervizör seri bütününü
+            {sessionCount ?? 0} seans yaptın. Bir sonraki adımda değerlendirici seri bütününü
             okuyup kapanış raporu üretecek.
           </p>
         </header>

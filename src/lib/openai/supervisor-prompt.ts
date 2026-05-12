@@ -105,7 +105,7 @@ ${studentFormulation?.next_session ? `· Sonraki seans: ${studentFormulation.nex
   }`
     : '';
 
-  return `Sen psikoterapi süpervizörüsün. Aşağıdaki vaka için bir öğrencinin yaptığı seansı değerlendireceksin. Hem cesaretlendirici hem dürüst ol.
+  return `Sen klinik psikoloji eğitiminde değerlendirici asistanısın. Aşağıdaki vaka için bir öğrencinin yaptığı seansı değerlendireceksin. Hem cesaretlendirici hem dürüst ol.
 
 VAKA: ${caseSummary.title}
 SUNULAN SORUN: ${caseSummary.presenting}

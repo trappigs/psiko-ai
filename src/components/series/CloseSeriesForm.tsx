@@ -41,7 +41,7 @@ export function CloseSeriesForm({ seriesId }: { seriesId: string }) {
           <span className="text-muted">(opsiyonel)</span>
         </span>
         <p className="text-xs text-muted italic mb-3">
-          Klinik veya kişisel bir not — süpervizör raporu yazılırken hesaba katılır.
+          Klinik veya kişisel bir not — değerlendirme raporu yazılırken hesaba katılır.
         </p>
         <textarea
           value={reflection}
@@ -74,7 +74,7 @@ export function CloseSeriesForm({ seriesId }: { seriesId: string }) {
           Vazgeç
         </a>
         <button onClick={submit} disabled={loading} className="btn-primary">
-          {loading ? 'Süpervizör seriyi okuyor…' : 'Vakayı kapat ve raporu üret →'}
+          {loading ? 'Değerlendirici seriyi okuyor…' : 'Vakayı kapat ve raporu üret →'}
         </button>
       </div>
     </div>

@@ -90,7 +90,7 @@ function buildPrompt(input: GenerateSummaryInput): string {
     '  "promises": string[],           // danışanın bu seansta verdiği konkret sözler; yoksa []'
   );
   lines.push(
-    '  "hypothesis_update": string     // süpervizörce: hipotez nasıl evrilmeli, 1-2 cümle'
+    '  "hypothesis_update": string     // klinik bakışla: hipotez nasıl evrilmeli, 1-2 cümle'
   );
   lines.push('}');
   return lines.join('\n');
@@ -111,7 +111,7 @@ export async function generateSessionSummary(
       {
         role: 'system',
         content:
-          'Sen psikoterapi süpervizör asistanısın. Bir seansı kısa ve eylem-odaklı şekilde özetlersin; çıktın yalnız geçerli JSON olur.',
+          'Sen klinik psikoloji eğitiminde değerlendirici asistanısın. Bir seansı kısa ve eylem-odaklı şekilde özetlersin; çıktın yalnız geçerli JSON olur.',
       },
       { role: 'user', content: buildPrompt(input) },
     ],

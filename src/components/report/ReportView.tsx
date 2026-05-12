@@ -115,7 +115,7 @@ export function ReportView(props: {
     return (
       <main className="max-w-2xl mx-auto px-6 py-32 text-center">
         <p className="font-display-italic text-4xl text-muted leading-tight">
-          Süpervizör
+          Değerlendirici
           <br />
           seansını okuyor…
         </p>
@@ -145,7 +145,7 @@ export function ReportView(props: {
       <a href={`/seri/${props.seriesId}`} className="btn-quiet text-xs">← Seri sayfası</a>
 
       <header className="mt-12 mb-16">
-        <p className="label-caps mb-4">Süpervizör raporu</p>
+        <p className="label-caps mb-4">Değerlendirme raporu</p>
         <h1 className="font-display text-5xl md:text-6xl leading-[0.98]">
           <em className="font-display-italic">{props.caseTitle}</em>
         </h1>
@@ -177,7 +177,7 @@ export function ReportView(props: {
             )}
           </div>
           <p className="text-xs text-muted italic mt-6">
-            Aşağıdaki süpervizör değerlendirmesini okurken kendi formülasyonunla karşılaştır:
+            Aşağıdaki değerlendirmeyi okurken kendi formülasyonunla karşılaştır:
             nerede buluştun, nerede ayrıldın?
           </p>
         </section>
@@ -185,7 +185,7 @@ export function ReportView(props: {
 
       <section className="mb-16">
         <p className="label-caps mb-4">
-          {props.formulation ? 'Süpervizör özeti' : 'Özet'}
+          {props.formulation ? 'Değerlendirici özeti' : 'Özet'}
         </p>
         <p className="text-xl md:text-2xl leading-relaxed font-display-italic text-ink">
           {report.summary}
@@ -197,7 +197,7 @@ export function ReportView(props: {
           <section className="surface px-6 py-6 mb-12">
             <p className="label-caps mb-3 text-accent">AI'ın eklemek istediği</p>
             <p className="text-sm text-muted mb-5 italic">
-              Süpervizörün senin formülasyonuna eklemeyi düşündüğü maddeler. İstersen{' '}
+              Değerlendiricinin senin formülasyonuna eklemeyi düşündüğü maddeler. İstersen{' '}
               <a
                 href={`/seri/${props.seriesId}/formulasyon`}
                 className="underline"
@@ -263,7 +263,7 @@ export function ReportView(props: {
             )}
             {report.formulation_comparison.supervisor_added.length > 0 && (
               <div>
-                <p className="label-caps mb-3 text-accent">Süpervizörün eklediği</p>
+                <p className="label-caps mb-3 text-accent">Değerlendiricinin eklediği</p>
                 <ul className="space-y-3">
                   {report.formulation_comparison.supervisor_added.map((s, i) => (
                     <li
@@ -347,7 +347,7 @@ export function ReportView(props: {
               <span
                 className={`speaker-label ${m.role === 'student' ? 'speaker-label--student' : ''}`}
               >
-                {m.role === 'student' ? '— Sen, terapist' : '— Danışan'}
+                {m.role === 'student' ? '— Sen (öğrenci)' : '— Danışan'}
               </span>
               <div className={m.role === 'client' ? 'bubble-client' : 'bubble-student'}>
                 {m.role === 'client' ? <RichText text={m.content} /> : m.content}

@@ -66,8 +66,8 @@ export default async function HomePage() {
             Bugün <em className="font-display-italic text-accent">kim</em> ile çalışacaksın?
           </h1>
           <p className="text-ink-soft mt-3 text-sm md:text-base max-w-lg">
-            Bir vaka seç, dosyasını oku, hazır olduğunda seansa başla. Süpervizör raporu seans
-            sonu seni bekliyor.
+            Bir vaka seç, dosyasını oku, hazır olduğunda seansa başla. Değerlendirme raporu
+            seans sonu seni bekliyor.
           </p>
         </header>
 

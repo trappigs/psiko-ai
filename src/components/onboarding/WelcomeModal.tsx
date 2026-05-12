@@ -24,7 +24,7 @@ const STEPS: Array<{ num: string; title: string; body: string }> = [
   },
   {
     num: '04',
-    title: 'Süpervizör raporunu oku',
+    title: 'Değerlendirme raporunu oku',
     body:
       'Mikrobeceri sayımı, alıntılı somut geri bildirim, formülasyon karşılaştırması. İlerleme sayfasında tüm seansların trendini izle.',
   },

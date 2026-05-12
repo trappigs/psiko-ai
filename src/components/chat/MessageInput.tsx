@@ -43,7 +43,7 @@ export function MessageInput({
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={1}
-          placeholder="Terapist olarak yanıtla…"
+          placeholder="Mesajını yaz…"
           disabled={disabled}
           autoFocus
           style={{

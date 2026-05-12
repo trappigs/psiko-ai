@@ -10,7 +10,7 @@
 
 - **Hesap verileri:** e-posta adresi, şifre (hashed), display_name
 - **Kullanım verileri:** seans transkriptleri (öğrencinin yazdığı mesajlar ve AI yanıtları), seans süreleri, mesaj sayısı, günlük token kullanımı
-- **Süpervizör raporları:** Oturum sonunda AI tarafından üretilen değerlendirme metni
+- **Değerlendirme raporları:** Oturum sonunda AI tarafından üretilen değerlendirme metni
 - **Teknik veriler:** IP adresi (Supabase/Vercel logları), tarayıcı bilgisi (Sentry hata izleme)
 
 ## 3. İşleme Amaçları
@@ -23,7 +23,7 @@
 ## 4. Üçüncü Taraflarla Paylaşım
 
 - **Supabase (ABD/AB):** Veritabanı ve kimlik doğrulama altyapısı
-- **OpenAI (ABD):** AI danışan ve süpervizör yanıtlarının üretilmesi için seans içerikleri OpenAI sunucularına iletilir
+- **OpenAI (ABD):** AI danışan ve değerlendirici yanıtlarının üretilmesi için seans içerikleri OpenAI sunucularına iletilir
 - **Vercel (ABD):** Uygulama hosting'i
 - **Sentry (ABD):** Hata izleme (mesaj içeriği yollanmaz)
 

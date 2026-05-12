@@ -52,7 +52,7 @@ export function MessageList({ messages }: { messages: Msg[] }) {
               <header className="flex items-center gap-2.5 mb-2">
                 <Avatar role={m.role} />
                 <span className="text-xs font-medium tracking-wide text-ink">
-                  {m.role === 'student' ? 'Sen, terapist' : 'Danışan'}
+                  {m.role === 'student' ? 'Sen (öğrenci)' : 'Danışan'}
                 </span>
               </header>
               <div className="pl-[38px]">

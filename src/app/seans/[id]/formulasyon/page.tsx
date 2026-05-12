@@ -53,8 +53,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <em className="font-display-italic text-accent">Senin</em> formülasyonun
           </h1>
           <p className="text-ink-soft mt-3 leading-relaxed text-sm md:text-base max-w-lg">
-            Süpervizör raporunu okumadan önce, kendi okumanı yaz. Klinik eğitiminin can damarı.
-            Sonra süpervizörünkiyle nerede buluştuğunu, nerede ayrıldığını gör.
+            Değerlendirme raporunu okumadan önce, kendi okumanı yaz. Klinik eğitiminin can damarı.
+            Sonra değerlendiricininkiyle nerede buluştuğunu, nerede ayrıldığını gör.
           </p>
           <p className="text-xs text-muted mt-3">
             Vaka: <span className="text-ink">{session.case?.title ?? '—'}</span>

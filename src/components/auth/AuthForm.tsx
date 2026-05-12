@@ -12,13 +12,13 @@ const FEATURES: Array<{ num: string; title: string; body: string }> = [
   },
   {
     num: '02',
-    title: '45 dakikalık seans',
+    title: '45 dakikalık görüşme alıştırması',
     body:
-      'Gerçek terapi süresinde, AI danışan vakanın söylem kaydında konuşur — beden dilini, duraksamalarını, direncini de canlandırır.',
+      'Gerçek görüşme süresinde, AI danışan vakanın söylem kaydında konuşur — beden dilini, duraksamalarını, direncini de canlandırır.',
   },
   {
     num: '03',
-    title: 'Süpervizör raporu',
+    title: 'Değerlendirme raporu',
     body:
       'Mikrobeceri sayımı (açık-uçlu soru oranı, yansıtma, empati…), gerçek mesaj alıntılarına dayalı somut geri bildirim, kaçırılan işaretler.',
   },
@@ -26,7 +26,7 @@ const FEATURES: Array<{ num: string; title: string; body: string }> = [
     num: '04',
     title: 'Refleksif formülasyon',
     body:
-      'Önce kendi okumanı yaz, sonra süpervizörünkiyle yan yana oku — buluştuğunuz, senin yakaladığın, eksik kalan.',
+      'Önce kendi okumanı yaz, sonra değerlendiricinin yorumuyla yan yana oku — buluştuğunuz, senin yakaladığın, eksik kalan.',
   },
 ];
 
@@ -100,8 +100,8 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             >
               Gerçek danışan bulmak zor; bulunan danışanla deneme yapmak hem etik
               hem pedagojik açıdan riskli. Burada hazırlanmış vakalarla
-              risksiz pratik yap, AI süpervizörden seans bazlı geri bildirim oku,
-              becerilerini zaman içinde izle.
+              risksiz pratik yap, AI eğitim değerlendiricisinden seans bazlı geri
+              bildirim oku, becerilerini zaman içinde izle.
             </p>
 
             <ul className="mt-10 space-y-5">
@@ -137,14 +137,15 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
               className="font-display-italic text-xl leading-snug"
               style={{ color: 'var(--color-paper)', opacity: 0.85 }}
             >
-              “Terapinin en zor yanı{' '}
+              “Bu işin en zor yanı{' '}
               <span className="text-accent-soft">danışanı görmektir</span>.”
             </p>
             <p
               className="font-mono text-[11px]"
               style={{ color: 'var(--color-paper)', opacity: 0.45 }}
             >
-              Yalnızca eğitim amaçlıdır · profesyonel süpervizyonun yerini tutmaz
+              Yalnızca eğitim amaçlıdır · gerçek psikoterapi hizmeti değildir ·
+              profesyonel süpervizyonun yerini tutmaz
             </p>
           </div>
         </div>
@@ -157,7 +158,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             <p className="label-caps">Bereketli Topraklar — Psikoloji Pratiği</p>
             <p className="text-sm leading-relaxed">
               Psikoloji öğrencileri için AI danışanla güvenli bir pratik odası.
-              Hazırlanmış vakalarla seans yap, süpervizör raporu oku, becerilerini izle.
+              Hazırlanmış vakalarla seans yap, değerlendirme raporu oku, becerilerini izle.
             </p>
           </div>
 
@@ -180,7 +181,7 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
           <p className="text-sm text-muted mb-10">
             {mode === 'login'
               ? 'AI danışanla seansa devam et.'
-              : 'AI danışanla terapi pratiği yap, süpervizör raporu al.'}
+              : 'AI danışanla klinik görüşme pratiği yap, değerlendirme raporu al.'}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-7">

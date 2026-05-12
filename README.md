@@ -1,6 +1,6 @@
-# psk — AI Danışan Süpervizyon Platformu
+# psk — AI Danışan Klinik Beceri Alıştırma Platformu
 
-Psikoloji öğrencileri için AI danışanla terapi pratiği uygulaması. Öğrenci danışman rolünde, AI danışan rolünde; oturum sonu AI süpervizör mikrobeceri sayımı + formülasyon karşılaştırması içeren bir rapor üretir.
+Psikoloji öğrencileri için klinik görüşme becerisi alıştırma aracı. Öğrenci görüşmeci rolünde, AI danışan rolünde; oturum sonu AI değerlendiricisi mikrobeceri sayımı + formülasyon karşılaştırması içeren bir rapor üretir. **Gerçek psikoterapi hizmeti değildir; profesyonel süpervizyonun yerini tutmaz.**
 
 ## Stack
 

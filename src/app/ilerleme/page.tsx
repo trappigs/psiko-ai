@@ -100,8 +100,8 @@ export default async function Page() {
             İlerleme <em className="font-display-italic text-accent">kıvrımları</em>
           </h1>
           <p className="text-ink-soft mt-3 text-sm md:text-base max-w-lg">
-            Her seansta süpervizör mikro becerilerini sayar. Zaman içinde nelerin değiştiğini
-            görüyorsun.
+            Her seansta değerlendirici mikro becerilerini sayar. Zaman içinde nelerin
+            değiştiğini görüyorsun.
           </p>
         </header>
 

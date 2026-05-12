@@ -104,7 +104,7 @@ export async function generateSeriesSynthesis(
       {
         role: 'system',
         content:
-          'Sen psikoterapi süpervizör asistanısın. Bir vaka serisinin tamamını okuyup öğrenciye kapsamlı, eylem-odaklı kapanış raporu üretiyorsun. Çıktın yalnız geçerli JSON olur.',
+          'Sen klinik psikoloji eğitiminde değerlendirici asistanısın. Bir vaka serisinin tamamını okuyup öğrenciye kapsamlı, eylem-odaklı kapanış raporu üretiyorsun. Çıktın yalnız geçerli JSON olur.',
       },
       { role: 'user', content: buildPrompt(input) },
     ],
