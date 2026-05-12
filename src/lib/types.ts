@@ -79,6 +79,56 @@ export type Database = {
           },
         ]
       }
+      case_series_reports: {
+        Row: {
+          arc: string
+          closing_reflection: string | null
+          final_formulation: Json | null
+          generated_at: string
+          growth: Json
+          id: string
+          missed_opportunities: Json
+          next_steps: string
+          series_id: string
+          summary: string
+          themes: Json
+        }
+        Insert: {
+          arc: string
+          closing_reflection?: string | null
+          final_formulation?: Json | null
+          generated_at?: string
+          growth?: Json
+          id?: string
+          missed_opportunities?: Json
+          next_steps: string
+          series_id: string
+          summary: string
+          themes?: Json
+        }
+        Update: {
+          arc?: string
+          closing_reflection?: string | null
+          final_formulation?: Json | null
+          generated_at?: string
+          growth?: Json
+          id?: string
+          missed_opportunities?: Json
+          next_steps?: string
+          series_id?: string
+          summary?: string
+          themes?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_series_reports_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "case_series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cases: {
         Row: {
           background: string
