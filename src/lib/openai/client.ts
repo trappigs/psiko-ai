@@ -26,5 +26,5 @@ export function getOpenAIDirect() {
   return new OpenAI({ apiKey });
 }
 
-export const MODEL = process.env.OPENAI_MODEL ?? 'gpt-4o';
-export const OPENAI_DIRECT_MODEL = process.env.OPENAI_DIRECT_MODEL ?? 'gpt-4o';
+export const MODEL = process.env.OPENAI_MODEL ?? 'gpt-5.4-mini';
+export const OPENAI_DIRECT_MODEL = process.env.OPENAI_DIRECT_MODEL ?? 'gpt-5.4-mini';
