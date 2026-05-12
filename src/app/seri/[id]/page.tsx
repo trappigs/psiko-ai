@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation';
 import { AppShell } from '@/components/shell/AppShell';
 import { CloseSeriesButton } from '@/components/series/CloseSeriesButton';
 import { LivingFormulationCard } from '@/components/series/LivingFormulationCard';
+import { StartNextSessionButton } from '@/components/series/StartNextSessionButton';
 import { parseFormulation } from '@/lib/formulation';
 
 type SeriesRow = {
@@ -146,6 +147,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <a href={`/seans/${activeSession.id}`} className="btn-primary">
                 Açık seansa dön →
               </a>
+            ) : sessions.some((s) => s.status === 'completed') ? (
+              <StartNextSessionButton caseId={series.case.id} />
             ) : (
               <a href={`/seans/start?case=${series.case.id}`} className="btn-primary">
                 Yeni seans başlat →
