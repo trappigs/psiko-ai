@@ -4,7 +4,7 @@ import { generateCase, type Difficulty } from '@/lib/openai/case-generator';
 import { findOrCreateOpenSeries, createSeries } from '@/lib/series';
 
 export type StartSessionInput =
-  | { mode: 'curated'; caseId: string }
+  | { mode: 'curated'; caseId: string; timeGapLabel?: string }
   | { mode: 'free'; difficulty: Difficulty; themeHint?: string };
 
 export async function startSession(userId: string, input: StartSessionInput) {
@@ -60,7 +60,13 @@ export async function startSession(userId: string, input: StartSessionInput) {
 
   const { data: session, error } = await sb
     .from('sessions')
-    .insert({ user_id: userId, case_id: caseId, series_id: seriesId, status: 'in_progress' })
+    .insert({
+      user_id: userId,
+      case_id: caseId,
+      series_id: seriesId,
+      status: 'in_progress',
+      time_gap_label: input.mode === 'curated' ? input.timeGapLabel ?? null : null,
+    })
     .select('id')
     .single();
   if (error) throw error;
