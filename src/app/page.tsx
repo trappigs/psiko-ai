@@ -5,6 +5,7 @@ import { WelcomeModal } from '@/components/onboarding/WelcomeModal';
 import { StarterHint } from '@/components/onboarding/StarterHint';
 import { AppShell } from '@/components/shell/AppShell';
 import { FreeSessionTrigger } from '@/components/case/FreeSessionTrigger';
+import { CastingTrigger } from '@/components/case/CastingTrigger';
 
 export default async function HomePage() {
   const sb = await createClient();
@@ -86,6 +87,7 @@ export default async function HomePage() {
         )}
 
         <FreeSessionTrigger />
+        <CastingTrigger />
 
         {starter && <StarterHint starter={starter} />}
 
