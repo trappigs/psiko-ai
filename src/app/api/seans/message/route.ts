@@ -14,6 +14,7 @@ type SessionRow = {
   user_id: string;
   status: 'in_progress' | 'completed' | 'abandoned';
   started_at: string;
+  series_id: string;
   case: CaseProfile | null;
 };
 
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
   const { data: sessionData } = await svc
     .from('sessions')
     .select(
-      'id, user_id, status, started_at, case:cases(presenting, background, personality, speech_style, goals_hidden, insight_level, defense_style, register)'
+      'id, user_id, status, started_at, series_id, case:cases(presenting, background, personality, speech_style, goals_hidden, insight_level, defense_style, register)'
     )
     .eq('id', sessionId)
     .single();
@@ -68,16 +69,41 @@ export async function POST(request: Request) {
     content,
   });
 
-  const { data: prevMsgs } = await svc
+  const { data: seriesSessions } = await svc
+    .from('sessions')
+    .select('id, status, started_at')
+    .eq('series_id', session.series_id)
+    .order('started_at', { ascending: true });
+
+  const olderIds = (seriesSessions ?? [])
+    .filter((s) => s.id !== sessionId && s.status === 'completed')
+    .map((s) => s.id);
+
+  let olderHistory: Array<{ role: string; content: string }> = [];
+  if (olderIds.length > 0) {
+    const { data: olderMsgs } = await svc
+      .from('messages')
+      .select('role, content, created_at')
+      .in('session_id', olderIds)
+      .order('created_at', { ascending: true });
+    olderHistory = (olderMsgs ?? []).map((m) => ({ role: m.role, content: m.content }));
+  }
+
+  const { data: currentMsgs } = await svc
     .from('messages')
     .select('role, content')
     .eq('session_id', sessionId)
     .order('created_at', { ascending: true });
 
+  const prevMsgs = [...olderHistory, ...(currentMsgs ?? [])];
+
   if (!session.case) {
     return NextResponse.json({ error: 'case_missing' }, { status: 500 });
   }
-  const systemPrompt = buildClientSystemPrompt(session.case);
+  let systemPrompt = buildClientSystemPrompt(session.case);
+  if (olderIds.length > 0) {
+    systemPrompt += `\n\nBu danışanla daha önce ${olderIds.length} seans yaptın. Aşağıdaki user/assistant mesajları geçmiş seanslardandır; en son blok bugünkü seans. Karakterini ve geçmişte söylediklerinin tutarlılığını koru.`;
+  }
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
