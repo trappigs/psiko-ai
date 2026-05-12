@@ -1,4 +1,4 @@
-import { getOpenAI, MODEL, isMockMode } from './client';
+import { getOpenAIDirect, OPENAI_DIRECT_MODEL, isMockMode } from './client';
 import { mockCandidatesResponse } from './mock';
 import { validateGeneratedCase } from './case-generator';
 import type {
@@ -103,9 +103,9 @@ function buildPrompt(params: CastingParams): string {
 async function callOnce(
   params: CastingParams
 ): Promise<{ raw: unknown; tokens: number }> {
-  const openai = getOpenAI();
+  const openai = getOpenAIDirect();
   const resp = await openai.chat.completions.create({
-    model: MODEL,
+    model: OPENAI_DIRECT_MODEL,
     temperature: 0.7,
     response_format: { type: 'json_object' },
     messages: [

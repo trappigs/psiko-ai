@@ -15,4 +15,16 @@ export function getOpenAI() {
   return new OpenAI({ apiKey, baseURL });
 }
 
+/**
+ * LLM_BASE_URL (Gemini) bypass eden gerçek OpenAI istemcisi.
+ * Klinik içerik üretirken Gemini'nin safety filter'ı 403 verirse
+ * (kişi profili gibi içerikleri "psikoterapi" bağlamında bloklayabiliyor),
+ * bu istemci ile OpenAI'a doğrudan gidilir. OPENAI_API_KEY zorunlu.
+ */
+export function getOpenAIDirect() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  return new OpenAI({ apiKey });
+}
+
 export const MODEL = process.env.OPENAI_MODEL ?? 'gpt-4o';
+export const OPENAI_DIRECT_MODEL = process.env.OPENAI_DIRECT_MODEL ?? 'gpt-4o';
