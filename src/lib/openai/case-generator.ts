@@ -45,7 +45,7 @@ function buildPrompt(input: GenerateCaseInput): string {
     `Zorluk: ${input.difficulty} (easy=daha açık ve işbirlikçi, hard=daha kapalı/savunmacı).`,
     hint ? `İpucu/tema (zayıf yönlendirme, taklit etme): "${hint}"` : `Tema serbest — kaygı klişesine takılma, çeşitlilik göster (kayıp, ilişki, kimlik, iş, aile, beden, yas, göç, vb. uzaydan seç).`,
     `Türkçe yaygın ama özgün bir ad/lakap kullan; gerçek bir kamuya mâl olmuş kişi olmasın.`,
-    `goals_hidden alanında aktif intihar planı YAZMA; üzgünlük/işlevsizlik düzeyinde kal.`,
+    `goals_hidden akut kriz değil; sürekli ama yönetilebilir düzeyde işlevsizlik/üzgünlük teması olsun.`,
     `Sadece şu schema'ya birebir uyan tek bir JSON nesnesi döndür, başka hiçbir metin yazma:`,
     `{`,
     `  "title": string,                  // 4-10 kelime, danışanı tanımlayan bir başlık`,
