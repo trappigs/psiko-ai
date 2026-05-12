@@ -7,7 +7,12 @@ function parseBody(body: unknown): StartSessionInput | { error: string } {
   const b = body as Record<string, unknown>;
 
   if (typeof b.case_id === 'string' && b.case_id.length > 0) {
-    return { mode: 'curated', caseId: b.case_id };
+    const gap = typeof b.time_gap_label === 'string' ? b.time_gap_label.trim().slice(0, 60) : '';
+    return {
+      mode: 'curated',
+      caseId: b.case_id,
+      timeGapLabel: gap.length > 0 ? gap : undefined,
+    };
   }
 
   if (b.mode === 'free') {
