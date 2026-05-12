@@ -16,7 +16,15 @@ const DIFFICULTY_LABEL: Record<string, string> = {
 
 type Filter = 'all' | 'easy' | 'medium' | 'hard' | 'todo';
 
-export function CaseIndex({ cases, doneIds }: { cases: CaseRow[]; doneIds: string[] }) {
+export function CaseIndex({
+  cases,
+  doneIds,
+  openSeriesByCaseId,
+}: {
+  cases: CaseRow[];
+  doneIds: string[];
+  openSeriesByCaseId?: Record<string, string>;
+}) {
   const done = useMemo(() => new Set(doneIds), [doneIds]);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
@@ -93,13 +101,14 @@ export function CaseIndex({ cases, doneIds }: { cases: CaseRow[]; doneIds: strin
           {filtered.map((c) => {
             const realIdx = cases.findIndex((x) => x.id === c.id) + 1;
             const isDone = done.has(c.id);
+            const openSeriesId = openSeriesByCaseId?.[c.id];
+            const href = openSeriesId ? `/seri/${openSeriesId}` : `/vaka/${c.id}`;
+            const ariaLabel = openSeriesId
+              ? `${c.title} — devam eden vaka serisini aç`
+              : `${c.title} — vaka dosyasını aç`;
             return (
               <li key={c.id}>
-                <a
-                  href={`/vaka/${c.id}`}
-                  className="index-row group"
-                  aria-label={`${c.title} — vaka dosyasını aç`}
-                >
+                <a href={href} className="index-row group" aria-label={ariaLabel}>
                   <span className="index-num flex items-center gap-2">
                     {String(realIdx).padStart(2, '0')}
                     {isDone && (
@@ -111,6 +120,11 @@ export function CaseIndex({ cases, doneIds }: { cases: CaseRow[]; doneIds: strin
                   <span className="min-w-0">
                     <span className="block index-title">
                       <em className="font-display-italic">{c.title}</em>
+                      {openSeriesId && (
+                        <span className="ml-2 text-xs text-accent font-mono not-italic">
+                          · devam ediyor
+                        </span>
+                      )}
                     </span>
                     <span className="block mt-2 text-sm text-ink-soft leading-relaxed line-clamp-2 max-w-2xl">
                       {c.presenting}
