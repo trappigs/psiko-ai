@@ -9,6 +9,7 @@ type SessionRow = {
   user_id: string;
   status: 'in_progress' | 'completed' | 'abandoned';
   formulation: unknown;
+  series_id: string;
   case: { title: string } | null;
 };
 
@@ -22,13 +23,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const { data } = await sb
     .from('sessions')
-    .select('id, user_id, status, formulation, case:cases(title)')
+    .select('id, user_id, status, formulation, series_id, case:cases(title)')
     .eq('id', id)
     .single();
   const session = data as unknown as SessionRow | null;
   if (!session || session.user_id !== user.id) notFound();
 
-  const existing = parseFormulation(session.formulation);
+  const { data: seriesRow } = await sb
+    .from('case_series')
+    .select('formulation')
+    .eq('id', session.series_id)
+    .maybeSingle();
+
+  const existing =
+    parseFormulation(seriesRow?.formulation) ?? parseFormulation(session.formulation);
 
   return (
     <AppShell userEmail={user.email}>
