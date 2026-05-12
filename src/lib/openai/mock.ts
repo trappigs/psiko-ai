@@ -31,6 +31,11 @@ import type {
   GenerateSynthesisInput,
   GenerateSynthesisResult,
 } from './synthesis-types';
+import type {
+  CastingParams,
+  GenerateCandidatesResult,
+  VariantLabel,
+} from './casting-types';
 
 export function mockGeneratedCase(input: GenerateCaseInput): GenerateCaseResult {
   const theme = (input.themeHint ?? '').trim();
@@ -102,5 +107,62 @@ export function mockSeriesSynthesis(
         'Bir sonraki kısa süreli vakada erken sinyalleri etiketleyip seans planına bağlamak iyi bir gelişim hedefi olabilir.',
     },
     token_count: 1500,
+  };
+}
+
+export function mockCandidatesResponse(
+  params: CastingParams
+): GenerateCandidatesResult {
+  const difficulty = params.difficulty ?? 'medium';
+  const variants: Array<{
+    label: VariantLabel;
+    personality: string;
+    speech_style: string;
+    defense_style: string;
+    insight_level: string;
+  }> = [
+    {
+      label: 'Daha açık',
+      personality: 'Sıcak, kolay açılan, terapiste hızlı güvenen.',
+      speech_style: 'Uzun, akıcı cümleler; duyguları kelimeleştirir.',
+      defense_style: 'rasyonalizasyon',
+      insight_level: 'high',
+    },
+    {
+      label: 'Dengeli',
+      personality: 'Tedirgin ama denemeye açık; ölçülü.',
+      speech_style: 'Orta uzunlukta cümleler, zaman zaman duraksar.',
+      defense_style: 'kaçınma',
+      insight_level: 'moderate',
+    },
+    {
+      label: 'Direngen',
+      personality: 'Mesafeli, gözlerini kaçıran, soruları kapatmaya çalışan.',
+      speech_style: 'Kısa cümleler, sessizlikler, "bilmiyorum" sık.',
+      defense_style: 'inkâr',
+      insight_level: 'low',
+    },
+  ];
+
+  return {
+    candidates: variants.map((v) => ({
+      title: `Mock ${v.label.toLowerCase()} aday`,
+      presenting: params.theme_hint
+        ? `${params.theme_hint} etrafında bir şikayet ile geldi.`
+        : 'Açıklamakta zorlandığı bir yorgunluk hâli ile geldi.',
+      background:
+        'Sosyal bağlamı parametrelere uygun şekilde mock olarak üretildi.',
+      personality: v.personality,
+      speech_style: v.speech_style,
+      goals_hidden:
+        'Mock: keşfedilmesi gereken bir mesele var (yüzeyde değil).',
+      insight_level: v.insight_level,
+      defense_style: v.defense_style,
+      register: 'gündelik',
+      diagnosis_hint: null,
+      difficulty,
+      variant_label: v.label,
+    })),
+    token_count: 2500,
   };
 }
