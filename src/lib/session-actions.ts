@@ -1,6 +1,7 @@
 import { createServiceClient } from '@/lib/supabase/service';
 import { defaultLimits, isOverDailyLimit } from '@/lib/usage';
 import { generateCase, type Difficulty } from '@/lib/openai/case-generator';
+import { findOrCreateOpenSeries, createSeries } from '@/lib/series';
 
 export type StartSessionInput =
   | { mode: 'curated'; caseId: string }
@@ -22,6 +23,7 @@ export async function startSession(userId: string, input: StartSessionInput) {
 
   let caseId: string;
   let generationTokens = 0;
+  let seriesId: string;
 
   if (input.mode === 'free') {
     const result = await generateCase({
@@ -50,14 +52,15 @@ export async function startSession(userId: string, input: StartSessionInput) {
       .single();
     if (caseErr || !caseRow) throw caseErr ?? new Error('case_insert_failed');
     caseId = caseRow.id;
+    seriesId = await createSeries(sb, userId, caseId);
   } else {
     caseId = input.caseId;
+    seriesId = await findOrCreateOpenSeries(sb, userId, caseId);
   }
 
   const { data: session, error } = await sb
     .from('sessions')
-    // @ts-expect-error transitional: series_id required by schema, populated in upcoming task
-    .insert({ user_id: userId, case_id: caseId, status: 'in_progress' })
+    .insert({ user_id: userId, case_id: caseId, series_id: seriesId, status: 'in_progress' })
     .select('id')
     .single();
   if (error) throw error;
