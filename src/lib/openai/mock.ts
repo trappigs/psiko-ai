@@ -27,6 +27,10 @@ export function mockSupervisorReport() {
 
 import type { GenerateCaseInput, GenerateCaseResult } from './case-types';
 import type { GenerateSummaryInput, GenerateSummaryResult } from './summary-types';
+import type {
+  GenerateSynthesisInput,
+  GenerateSynthesisResult,
+} from './synthesis-types';
 
 export function mockGeneratedCase(input: GenerateCaseInput): GenerateCaseResult {
   const theme = (input.themeHint ?? '').trim();
@@ -70,5 +74,33 @@ export function mockSessionSummary(
         'İçedönüklük yüzeyde; kayıp temasının altta yatma ihtimali var.',
     },
     token_count: 500,
+  };
+}
+
+export function mockSeriesSynthesis(
+  input: Pick<GenerateSynthesisInput, 'sessionCount'>
+): GenerateSynthesisResult {
+  return {
+    synthesis: {
+      summary: `Mock kapanış sentezi — ${input.sessionCount} seans boyunca süren bir vaka takibi.`,
+      arc: 'Erken seanslarda yüzeyde kalan iletişim zamanla derinleşti; orta dönemde direnç belirgindi, son seanslarda iç gözlem arttı.',
+      themes: [
+        'Aileyle kopukluk yinelendi',
+        'Bedensel ifade artarak gelişti',
+        'Mizah savunma olarak kullanıldı',
+      ],
+      growth: [
+        'Açık-uçlu soru kullanımı pekişti',
+        'Sessizliği tolere etmeye başladın',
+        'Yansıtmaya geçişte daha doğal oldun',
+      ],
+      missed_opportunities: [
+        'Erken seansta bahsedilen kayıp tema yeterince takip edilmedi',
+        'Bedensel sinyalleri kelimeleştirme bazen erkenden bırakıldı',
+      ],
+      next_steps:
+        'Bir sonraki kısa süreli vakada erken sinyalleri etiketleyip seans planına bağlamak iyi bir gelişim hedefi olabilir.',
+    },
+    token_count: 1500,
   };
 }
