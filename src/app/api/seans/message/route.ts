@@ -15,8 +15,25 @@ type SessionRow = {
   status: 'in_progress' | 'completed' | 'abandoned';
   started_at: string;
   series_id: string;
+  time_gap_label: string | null;
   case: CaseProfile | null;
 };
+
+type SummaryShape = {
+  headline: string;
+  key_events: string[];
+  promises: string[];
+  hypothesis_update: string;
+};
+
+type LivingFormulation = {
+  presenting?: string;
+  hypothesis?: string;
+  patterns?: string;
+  next_session?: string;
+};
+
+const FULL_TRANSCRIPT_COUNT = 2;
 
 export async function POST(request: Request) {
   const sb = await createClient();
@@ -37,7 +54,7 @@ export async function POST(request: Request) {
   const { data: sessionData } = await svc
     .from('sessions')
     .select(
-      'id, user_id, status, started_at, series_id, case:cases(presenting, background, personality, speech_style, goals_hidden, insight_level, defense_style, register)'
+      'id, user_id, status, started_at, series_id, time_gap_label, case:cases(presenting, background, personality, speech_style, goals_hidden, insight_level, defense_style, register)'
     )
     .eq('id', sessionId)
     .single();
@@ -71,23 +88,39 @@ export async function POST(request: Request) {
 
   const { data: seriesSessions } = await svc
     .from('sessions')
-    .select('id, status, started_at')
+    .select('id, status, started_at, summary')
     .eq('series_id', session.series_id)
     .order('started_at', { ascending: true });
 
-  const olderIds = (seriesSessions ?? [])
-    .filter((s) => s.id !== sessionId && s.status === 'completed')
-    .map((s) => s.id);
+  const completedOthers = (seriesSessions ?? []).filter(
+    (s) => s.id !== sessionId && s.status === 'completed'
+  );
+  const fullSessions = completedOthers.slice(-FULL_TRANSCRIPT_COUNT);
+  const olderSessions = completedOthers.slice(0, -FULL_TRANSCRIPT_COUNT);
 
-  let olderHistory: Array<{ role: string; content: string }> = [];
-  if (olderIds.length > 0) {
-    const { data: olderMsgs } = await svc
+  let fullHistory: Array<{ role: string; content: string }> = [];
+  if (fullSessions.length > 0) {
+    const { data: rows } = await svc
       .from('messages')
-      .select('role, content, created_at')
-      .in('session_id', olderIds)
+      .select('role, content, created_at, session_id')
+      .in('session_id', fullSessions.map((s) => s.id))
       .order('created_at', { ascending: true });
-    olderHistory = (olderMsgs ?? []).map((m) => ({ role: m.role, content: m.content }));
+    fullHistory = (rows ?? []).map((m) => ({ role: m.role, content: m.content }));
   }
+
+  const summaries: SummaryShape[] = olderSessions
+    .map((s) => s.summary as SummaryShape | null)
+    .filter(
+      (s): s is SummaryShape =>
+        !!s && typeof s === 'object' && typeof s.headline === 'string'
+    );
+
+  const { data: seriesRow } = await svc
+    .from('case_series')
+    .select('formulation')
+    .eq('id', session.series_id)
+    .maybeSingle();
+  const livingFormulation = (seriesRow?.formulation as LivingFormulation | null) ?? null;
 
   const { data: currentMsgs } = await svc
     .from('messages')
@@ -95,14 +128,41 @@ export async function POST(request: Request) {
     .eq('session_id', sessionId)
     .order('created_at', { ascending: true });
 
-  const prevMsgs = [...olderHistory, ...(currentMsgs ?? [])];
+  const prevMsgs = [...fullHistory, ...(currentMsgs ?? [])];
 
   if (!session.case) {
     return NextResponse.json({ error: 'case_missing' }, { status: 500 });
   }
   let systemPrompt = buildClientSystemPrompt(session.case);
-  if (olderIds.length > 0) {
-    systemPrompt += `\n\nBu danışanla daha önce ${olderIds.length} seans yaptın. Aşağıdaki user/assistant mesajları geçmiş seanslardandır; en son blok bugünkü seans. Karakterini ve geçmişte söylediklerinin tutarlılığını koru.`;
+
+  if (livingFormulation) {
+    const parts = [
+      livingFormulation.presenting && `Sunulan: ${livingFormulation.presenting}`,
+      livingFormulation.hypothesis && `Hipotez: ${livingFormulation.hypothesis}`,
+      livingFormulation.patterns && `Örüntü: ${livingFormulation.patterns}`,
+      livingFormulation.next_session && `Sonraki seans hedefi: ${livingFormulation.next_session}`,
+    ].filter(Boolean);
+    if (parts.length > 0) {
+      systemPrompt += `\n\nTerapistin bu vakaya dair mevcut formülasyonu (bağlam için, kendi rolünü bozma):\n${parts.join('\n')}`;
+    }
+  }
+
+  if (summaries.length > 0) {
+    const block = summaries
+      .map(
+        (s, i) =>
+          `Seans ${i + 1}: ${s.headline}\n  Olaylar: ${s.key_events.join('; ')}\n  Sözler: ${s.promises.join('; ') || '—'}\n  Hipotez: ${s.hypothesis_update}`
+      )
+      .join('\n\n');
+    systemPrompt += `\n\nGeçmiş seans özetleri (eskiden yeniye):\n${block}`;
+  }
+
+  if (fullSessions.length > 0) {
+    systemPrompt += `\n\nSon ${fullSessions.length} seansın tam transcript'i aşağıdaki user/assistant mesajlarında; ardından bugünkü seans devam ediyor.`;
+  }
+
+  if (session.time_gap_label) {
+    systemPrompt += `\n\nSon seansla bu seans arasında "${session.time_gap_label}" geçti. Açılışını ve referanslarını buna göre kur.`;
   }
 
   const encoder = new TextEncoder();
