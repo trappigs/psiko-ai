@@ -79,27 +79,24 @@ function buildPrompt(params: CastingParams): string {
     'goals_hidden alanında aktif intihar planı YAZMA; üzgünlük/işlevsizlik düzeyinde kal.',
     'school_fit verildiyse vaka o ekolde çalışmaya uygun şekilde tasarla (ör. cbt → bilişsel çarpıtmalar belirgin; psikodinamik → ilişki örüntüleri zengin; humanistik → içsel çelişki ön planda; sistemik → ailesel/ilişkisel bağlam dokulu).',
     '',
-    'Sadece şu JSON nesnesini döndür, başka hiçbir metin yazma:',
-    '{',
-    '  "candidates": [',
-    '    {',
-    '      "title": string,                  // 4-10 kelime',
-    '      "presenting": string,             // 1-3 cümle',
-    '      "background": string,             // 2-4 cümle',
-    '      "personality": string,            // 1-2 cümle',
-    '      "speech_style": string,           // 1 cümle',
-    '      "goals_hidden": string,           // 1-2 cümle, esas mesele',
-    '      "insight_level": "low"|"moderate"|"high",',
-    '      "defense_style": string,          // 1-3 kelime',
-    '      "register": "gündelik"|"resmi"|"sokak"|"argo-az",',
-    '      "diagnosis_hint": string | null,',
-    '      "difficulty": "easy"|"medium"|"hard",',
-    '      "variant_label": "Daha açık"|"Dengeli"|"Direngen"',
-    '    },',
-    '    { ... ikinci aday ... },',
-    '    { ... üçüncü aday ... }',
-    '  ]',
-    '}',
+    'ÖNEMLİ: candidates dizisi tam olarak 3 nesne içermeli. Her bir nesne aşağıdaki tam şemayı doldurmalı; placeholder veya kısaltma kullanma. Üç ada da farklı isim, geçmiş, kişilik ver — sadece variant_label değişmesin, üç aday gerçekten farklı kişiler olsun.',
+    '',
+    'Her aday için zorunlu alanlar:',
+    '- title: string (4-10 kelime, danışanı tanımlayan başlık)',
+    '- presenting: string (1-3 cümle, neden geldim)',
+    '- background: string (2-4 cümle, geçmiş + aile + bağlam)',
+    '- personality: string (1-2 cümle, mizaç)',
+    '- speech_style: string (1 cümle)',
+    '- goals_hidden: string (1-2 cümle, terapistin keşfetmesi gereken esas mesele)',
+    '- insight_level: "low" veya "moderate" veya "high"',
+    '- defense_style: string (1-3 kelime, örn. "kaçınma", "rasyonalizasyon", "inkâr")',
+    '- register: "gündelik" veya "resmi" veya "sokak" veya "argo-az"',
+    '- diagnosis_hint: string veya null (klinik çağrışım, opsiyonel)',
+    '- difficulty: "easy" veya "medium" veya "hard"',
+    '- variant_label: birinci adayda "Daha açık", ikincide "Dengeli", üçüncüde "Direngen"',
+    '',
+    'Çıktı şekli (sadece tek JSON nesnesi, başka metin yok):',
+    '{ "candidates": [<3 tam aday nesnesi>] }',
   ].join('\n');
 }
 
@@ -109,7 +106,7 @@ async function callOnce(
   const openai = getOpenAI();
   const resp = await openai.chat.completions.create({
     model: MODEL,
-    temperature: 0.85,
+    temperature: 0.7,
     response_format: { type: 'json_object' },
     messages: [
       {
@@ -147,6 +144,7 @@ export async function generateCaseCandidates(
       return { candidates, token_count: totalTokens };
     } catch (e) {
       lastErr = e;
+      console.error('[case-candidates-generator] attempt', attempt + 1, 'failed:', e);
     }
   }
   throw new Error(`generation_failed:${(lastErr as Error)?.message ?? 'unknown'}`);

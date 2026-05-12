@@ -35,10 +35,11 @@ export async function POST(request: Request) {
     result = await generateCaseCandidates(params);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown';
+    console.error('[danisan-aday] generation failed:', msg);
     if (msg.startsWith('generation_failed')) {
-      return NextResponse.json({ error: 'generation_failed' }, { status: 502 });
+      return NextResponse.json({ error: 'generation_failed', detail: msg }, { status: 502 });
     }
-    return NextResponse.json({ error: 'internal' }, { status: 500 });
+    return NextResponse.json({ error: 'internal', detail: msg }, { status: 500 });
   }
 
   const publics: CandidatePublic[] = [];
