@@ -39,6 +39,7 @@ export type Database = {
           case_id: string
           closed_at: string | null
           created_at: string
+          formulation: Json | null
           id: string
           status: string
           user_id: string
@@ -47,6 +48,7 @@ export type Database = {
           case_id: string
           closed_at?: string | null
           created_at?: string
+          formulation?: Json | null
           id?: string
           status?: string
           user_id: string
@@ -55,6 +57,7 @@ export type Database = {
           case_id?: string
           closed_at?: string | null
           created_at?: string
+          formulation?: Json | null
           id?: string
           status?: string
           user_id?: string
@@ -291,6 +294,8 @@ export type Database = {
           series_id: string
           started_at: string
           status: string
+          summary: Json | null
+          time_gap_label: string | null
           user_id: string
         }
         Insert: {
@@ -302,6 +307,8 @@ export type Database = {
           series_id: string
           started_at?: string
           status?: string
+          summary?: Json | null
+          time_gap_label?: string | null
           user_id: string
         }
         Update: {
@@ -313,6 +320,8 @@ export type Database = {
           series_id?: string
           started_at?: string
           status?: string
+          summary?: Json | null
+          time_gap_label?: string | null
           user_id?: string
         }
         Relationships: [
