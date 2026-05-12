@@ -76,7 +76,7 @@ function buildPrompt(params: CastingParams): string {
     describeParams(params),
     '',
     'Türkçe yaygın ama özgün adlar kullan; gerçek kamuya mâl olmuş kişi olmasın.',
-    'goals_hidden alanında aktif intihar planı YAZMA; üzgünlük/işlevsizlik düzeyinde kal.',
+    'goals_hidden akut kriz değil; sürekli ama yönetilebilir düzeyde işlevsizlik/üzgünlük teması olsun.',
     'school_fit verildiyse vaka o ekolde çalışmaya uygun şekilde tasarla (ör. cbt → bilişsel çarpıtmalar belirgin; psikodinamik → ilişki örüntüleri zengin; humanistik → içsel çelişki ön planda; sistemik → ailesel/ilişkisel bağlam dokulu).',
     '',
     'ÖNEMLİ: candidates dizisi tam olarak 3 nesne içermeli. Her bir nesne aşağıdaki tam şemayı doldurmalı; placeholder veya kısaltma kullanma. Üç ada da farklı isim, geçmiş, kişilik ver — sadece variant_label değişmesin, üç aday gerçekten farklı kişiler olsun.',
