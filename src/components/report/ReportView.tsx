@@ -192,6 +192,31 @@ export function ReportView(props: {
         </p>
       </section>
 
+      {report.formulation_comparison &&
+        report.formulation_comparison.supervisor_added.length > 0 && (
+          <section className="surface px-6 py-6 mb-12">
+            <p className="label-caps mb-3 text-accent">AI'ın eklemek istediği</p>
+            <p className="text-sm text-muted mb-5 italic">
+              Süpervizörün senin formülasyonuna eklemeyi düşündüğü maddeler. İstersen{' '}
+              <a
+                href={`/seri/${props.seriesId}/formulasyon`}
+                className="underline"
+              >
+                yaşayan formülasyonu düzenle
+              </a>{' '}
+              üzerinden manuel olarak ekleyebilirsin.
+            </p>
+            <ul className="space-y-2">
+              {report.formulation_comparison.supervisor_added.map((s, i) => (
+                <li key={i} className="text-base leading-relaxed flex gap-3">
+                  <span className="font-mono text-muted shrink-0">+</span>
+                  <span>{s}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
       {report.formulation_comparison && props.formulation && (
         <section className="mb-16">
           <p className="label-caps mb-6">Formülasyon karşılaştırması</p>
