@@ -1,8 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
-import { createServiceClient } from '@/lib/supabase/service';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id: seriesId } = await context.params;
   const sb = await createClient();
   const {
     data: { user },
@@ -10,9 +13,6 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
 
   const body = await request.json().catch(() => ({}));
-  const sessionId: string | undefined = body.session_id;
-  if (!sessionId) return NextResponse.json({ error: 'invalid_input' }, { status: 400 });
-
   const presenting = typeof body.presenting === 'string' ? body.presenting.trim() : '';
   const hypothesis = typeof body.hypothesis === 'string' ? body.hypothesis.trim() : '';
   const patterns = typeof body.patterns === 'string' ? body.patterns.trim() : '';
@@ -23,13 +23,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'empty' }, { status: 400 });
   }
 
-  const svc = createServiceClient();
-  const { data: session } = await svc
-    .from('sessions')
-    .select('id, user_id, series_id')
-    .eq('id', sessionId)
-    .single();
-  if (!session || session.user_id !== user.id) {
+  const { data: series } = await sb
+    .from('case_series')
+    .select('id, user_id')
+    .eq('id', seriesId)
+    .maybeSingle();
+  if (!series || series.user_id !== user.id) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 });
   }
 
@@ -41,17 +40,11 @@ export async function POST(request: Request) {
     written_at: new Date().toISOString(),
   };
 
-  const { error: sessErr } = await svc
-    .from('sessions')
-    .update({ formulation })
-    .eq('id', sessionId);
-  if (sessErr) return NextResponse.json({ error: 'save_failed' }, { status: 500 });
-
-  const { error: seriesErr } = await svc
+  const { error } = await sb
     .from('case_series')
     .update({ formulation })
-    .eq('id', session.series_id);
-  if (seriesErr) return NextResponse.json({ error: 'save_failed' }, { status: 500 });
+    .eq('id', seriesId);
+  if (error) return NextResponse.json({ error: 'save_failed' }, { status: 500 });
 
   return NextResponse.json({ ok: true });
 }
