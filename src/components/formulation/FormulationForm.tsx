@@ -42,9 +42,15 @@ const FIELDS: Array<{
 export function FormulationForm({
   sessionId,
   initial,
+  endpoint,
+  redirectTo,
+  bodyKey,
 }: {
   sessionId: string;
   initial: Formulation | null;
+  endpoint?: string;
+  redirectTo?: string;
+  bodyKey?: 'session_id' | 'series_id';
 }) {
   const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>({
@@ -62,10 +68,11 @@ export function FormulationForm({
   async function submit() {
     setSaving(true);
     setError(null);
-    const res = await fetch('/api/seans/formulasyon', {
+    const key = bodyKey ?? 'session_id';
+    const res = await fetch(endpoint ?? '/api/seans/formulasyon', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ session_id: sessionId, ...values }),
+      body: JSON.stringify({ [key]: sessionId, ...values }),
     });
     setSaving(false);
     if (!res.ok) {
@@ -73,7 +80,7 @@ export function FormulationForm({
       setError(err.error === 'empty' ? 'En az bir alan dolu olmalı.' : 'Kaydedilemedi.');
       return;
     }
-    router.push(`/rapor/${sessionId}`);
+    router.push(redirectTo ?? `/rapor/${sessionId}`);
   }
 
   return (
@@ -112,8 +119,8 @@ export function FormulationForm({
       )}
 
       <div className="flex items-center justify-between gap-4 pt-6 border-t border-rule flex-wrap">
-        <a href={`/rapor/${sessionId}`} className="btn-quiet">
-          Atla & rapora git
+        <a href={redirectTo ?? `/rapor/${sessionId}`} className="btn-quiet">
+          {bodyKey === 'series_id' ? 'Vazgeç' : 'Atla & rapora git'}
         </a>
         <div className="flex items-center gap-4">
           <span className="text-xs text-muted font-mono">{totalChars} karakter</span>
