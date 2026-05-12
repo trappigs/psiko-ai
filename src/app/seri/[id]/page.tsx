@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect, notFound } from 'next/navigation';
 import { AppShell } from '@/components/shell/AppShell';
 import { CloseSeriesButton } from '@/components/series/CloseSeriesButton';
+import { LivingFormulationCard } from '@/components/series/LivingFormulationCard';
+import { parseFormulation } from '@/lib/formulation';
 
 type SeriesRow = {
   id: string;
@@ -9,6 +11,7 @@ type SeriesRow = {
   status: 'open' | 'closed';
   created_at: string;
   closed_at: string | null;
+  formulation: unknown;
   case: {
     id: string;
     title: string;
@@ -40,7 +43,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   const { data: seriesData } = await sb
     .from('case_series')
-    .select('id, user_id, status, created_at, closed_at, case:cases(id, title, source)')
+    .select('id, user_id, status, created_at, closed_at, formulation, case:cases(id, title, source)')
     .eq('id', id)
     .single();
   const series = seriesData as unknown as SeriesRow | null;
@@ -56,6 +59,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const isOpen = series.status === 'open';
   const activeSession = sessions.find((s) => s.status === 'in_progress');
   const isCurated = series.case.source === 'curated';
+  const livingFormulation = parseFormulation(series.formulation);
 
   return (
     <AppShell userEmail={user.email}>
@@ -89,6 +93,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             )}
           </div>
         </header>
+
+        <LivingFormulationCard seriesId={series.id} formulation={livingFormulation} />
 
         {sessions.length === 0 ? (
           <p className="surface p-10 text-center text-sm text-muted">Henüz seans yok.</p>
