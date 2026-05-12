@@ -26,6 +26,7 @@ export function mockSupervisorReport() {
 }
 
 import type { GenerateCaseInput, GenerateCaseResult } from './case-types';
+import type { GenerateSummaryInput, GenerateSummaryResult } from './summary-types';
 
 export function mockGeneratedCase(input: GenerateCaseInput): GenerateCaseResult {
   const theme = (input.themeHint ?? '').trim();
@@ -50,5 +51,24 @@ export function mockGeneratedCase(input: GenerateCaseInput): GenerateCaseResult 
       difficulty: input.difficulty,
     },
     token_count: 750,
+  };
+}
+
+export function mockSessionSummary(
+  input: Pick<GenerateSummaryInput, 'transcript'>
+): GenerateSummaryResult {
+  const msgCount = input.transcript.length;
+  return {
+    summary: {
+      headline: `Mock seans özeti — ${msgCount} mesaj`,
+      key_events: [
+        'Danışan açılış sorularına kısa yanıt verdi',
+        'Bir aile dinamiği gündeme geldi ama derinleşmedi',
+      ],
+      promises: [],
+      hypothesis_update:
+        'İçedönüklük yüzeyde; kayıp temasının altta yatma ihtimali var.',
+    },
+    token_count: 500,
   };
 }
