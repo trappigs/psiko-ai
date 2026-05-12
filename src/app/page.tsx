@@ -38,6 +38,14 @@ export default async function HomePage() {
     Boolean
   ) as string[];
 
+  const { data: openSeriesRows } = await sb
+    .from('case_series')
+    .select('id, case_id')
+    .eq('user_id', user.id)
+    .eq('status', 'open');
+  const openSeriesByCaseId: Record<string, string> = {};
+  for (const r of openSeriesRows ?? []) openSeriesByCaseId[r.case_id] = r.id;
+
   const list = (cases ?? []) as Array<{
     id: string;
     title: string;
@@ -81,7 +89,7 @@ export default async function HomePage() {
 
         {starter && <StarterHint starter={starter} />}
 
-        <CaseIndex cases={list} doneIds={doneIds} />
+        <CaseIndex cases={list} doneIds={doneIds} openSeriesByCaseId={openSeriesByCaseId} />
       </div>
 
       <WelcomeModal shouldShow={isFirstTime} />
