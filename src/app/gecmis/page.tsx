@@ -37,6 +37,29 @@ export default async function Page() {
     .order('started_at', { ascending: false });
   const sessions = (data ?? []) as unknown as SessionRow[];
 
+  const { data: closedSeriesData } = await sb
+    .from('case_series')
+    .select('id, closed_at, case:cases(title)')
+    .eq('user_id', user.id)
+    .eq('status', 'closed')
+    .order('closed_at', { ascending: false });
+
+  const closedSeriesList = (closedSeriesData ?? []) as Array<{
+    id: string;
+    closed_at: string | null;
+    case: { title: string } | null;
+  }>;
+
+  const closedSeries = await Promise.all(
+    closedSeriesList.map(async (s) => {
+      const { count } = await sb
+        .from('sessions')
+        .select('id', { count: 'exact', head: true })
+        .eq('series_id', s.id);
+      return { ...s, session_count: count ?? 0 };
+    })
+  );
+
   return (
     <AppShell userEmail={user.email}>
       <div className="max-w-4xl mx-auto px-6 md:px-10 py-8 md:py-12">
@@ -49,6 +72,41 @@ export default async function Page() {
             {sessions.length} seans · son: {sessions[0]?.case?.title ?? '—'}
           </p>
         </header>
+
+        {closedSeries.length > 0 && (
+          <section className="mb-12">
+            <p className="label-caps mb-6">Tamamlanmış vakalar</p>
+            <ol className="surface divide-y divide-rule overflow-hidden">
+              {closedSeries.map((s) => (
+                <li key={s.id}>
+                  <a href={`/seri/${s.id}/kapanis`} className="index-row">
+                    <span className="min-w-0">
+                      <span className="block index-title">
+                        <em className="font-display-italic">{s.case?.title ?? '—'}</em>
+                      </span>
+                      <span className="block mt-1 text-xs text-muted font-mono">
+                        {s.session_count} seans
+                        {s.closed_at && (
+                          <>
+                            {' '}
+                            ·{' '}
+                            {new Date(s.closed_at).toLocaleDateString('tr-TR', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            })}
+                          </>
+                        )}
+                      </span>
+                    </span>
+                    <span className="index-meta">Kapanış raporu</span>
+                    <span className="font-mono text-base text-muted">→</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
 
         {sessions.length === 0 ? (
           <div className="surface p-10 text-center">
