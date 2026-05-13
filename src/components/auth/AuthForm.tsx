@@ -226,8 +226,18 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
                   >
                     KVKK Aydınlatma Metni
                   </a>
-                  &apos;ni okudum; verilerimin OpenAI altyapısında işlenmesine onay
-                  veriyorum.
+                  &apos;ni ve{' '}
+                  <a
+                    href="/etik"
+                    target="_blank"
+                    className="underline underline-offset-2 hover:text-ink"
+                  >
+                    Etik İlkeler
+                  </a>
+                  &apos;i okudum; bu aracın bir klinik beceri alıştırma aracı
+                  olduğunu, profesyonel süpervizyon veya psikoterapi hizmeti
+                  yerine geçmediğini anladım; verilerimin OpenAI altyapısında
+                  işlenmesine onay veriyorum.
                 </span>
               </label>
             )}

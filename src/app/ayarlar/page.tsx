@@ -55,11 +55,18 @@ export default function Page() {
         </section>
 
         <section className="surface p-6">
-          <p className="font-display text-xl mb-1">Yasal</p>
-          <p className="text-sm text-muted mb-5">Verilerinin nasıl işlendiği.</p>
-          <a href="/kvkk" className="btn-quiet">
-            KVKK Aydınlatma Metni →
-          </a>
+          <p className="font-display text-xl mb-1">Yasal & etik</p>
+          <p className="text-sm text-muted mb-5">
+            Verilerinin nasıl işlendiği ve bu aracın konumlandırması.
+          </p>
+          <div className="flex flex-col gap-2">
+            <a href="/kvkk" className="btn-quiet">
+              KVKK Aydınlatma Metni →
+            </a>
+            <a href="/etik" className="btn-quiet">
+              Hakkımızda & Etik İlkeler →
+            </a>
+          </div>
         </section>
       </div>
     </AppShell>
